@@ -4,6 +4,8 @@ import { connectToDb, pool } from "./db/conn";
 import paramsRoute from "./routes/paramsRoute"
 import categoriesRoute from "./routes/categoriesRoute"
 import productsRoute from "./routes/productsRoute"
+import apiKeysRoute from "./routes/apiKeyRoute"
+
 
 dotenv.config();
 const app = express()
@@ -16,6 +18,7 @@ app.use(express.json())
 app.use("/api/v1/params",paramsRoute)
 app.use("/api/v1/categories",categoriesRoute)
 app.use("/api/v1/products",productsRoute)
+app.use("/api/v1/users/apikey",apiKeysRoute)
 
 
 connectToDb()

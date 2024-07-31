@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { find } from "../db/paramsQueries";
 import { Send } from "express-serve-static-core";
 import { get_all_products_request, get_product_details_request, get_products_by_category_request, product } from "../dtos/products.dto";
-import { all_prods, latest_ten_prods, prod_details, prods_by_category } from "../db/productsQueries";
+import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_prods } from "../db/productsQueries";
 import { off } from "process";
 
 
@@ -113,6 +113,26 @@ export async function get_product_details(request:Request<{},{},get_product_deta
         }else{
             STATUS = 200
             response.status(STATUS).send(prods[0])
+        }
+
+    } catch (error) {
+        throw error
+    }
+}
+
+export async function get_random_products(request:Request<{},{},get_product_details_request>,response:Response<product[]>) {
+    try {
+        // TODO : validation
+        const slug:string = request.body.slug
+        const prods:product[] = await random_prods(slug,3)
+        let STATUS = 500
+
+        if(prods.length >1)
+        {
+            response.status(STATUS).send(prods)
+        }else{
+            STATUS = 200
+            response.status(STATUS).send(prods)
         }
 
     } catch (error) {

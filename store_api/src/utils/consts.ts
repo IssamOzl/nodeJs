@@ -1,0 +1,9 @@
+export const DB_HOST:string="localhost"
+export const DB_USER:string="root"
+export const DB_PASSWORD:string=""
+export const SERVER_PORT:number=3000
+export const DB_NAME:string="db_manage"
+export const DB_PORT:number=3306
+export const MAX_REQ_NUM:number = 25
+export const SECRET_KEY:string = "a9f4b2c7e3d6f8a1b4c7d9e2f1a3b6d8"
+export const SECRET_IV:string = "b8f3c1e7a2d6f9b4"

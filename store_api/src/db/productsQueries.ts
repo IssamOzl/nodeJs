@@ -155,10 +155,23 @@ export const prod_details = async (slug:string)=>{
             note+=review.review_note
         });
         prods[0].note = note
-  
-        
+
         return prods
     } catch (error) {
         throw error
     }
+}
+
+export const random_prods = async(slug:string,count:number)=>{
+   try
+   {
+    let QUERY="SELECT * FROM product as prd WHERE  prd.product_status ='active' and slug != ? and prd.product_id in (SELECT `id_produit` FROM `product_variations` WHERE `status` = 'active' and stock >0 ) ORDER BY rand() LIMIT ?"
+        const client = await pool.getConnection()
+        const [rows, fields]= await client.query(QUERY,[slug,count])
+        client.release();
+        const prods:product[] = rows as product[]
+        return prods
+    } catch (error) {
+        throw error
+    }    
 }

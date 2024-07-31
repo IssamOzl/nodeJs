@@ -1,5 +1,8 @@
 import { productReview } from "./reviews.dto"
 
+type activeOrNot= "active"|"inactive"
+
+
 export interface product{
     "product_id": number
     "brand_id" : number
@@ -13,7 +16,7 @@ export interface product{
     "product_minimum_order": number
     "product_name": string
     //"product_quantity": number
-    "product_status":"active"|"inactive"
+    "product_status":activeOrNot
     "product_tax": number
     "product_unit":string
     "slug":string
@@ -35,7 +38,7 @@ export interface productThumb{
 export interface productVariations{
     "id":number
     "name":string
-    "status":"active"|"inactive"
+    "status":activeOrNot
     "stock":number
     "placement":string
 }
