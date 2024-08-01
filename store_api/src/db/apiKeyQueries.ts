@@ -1,6 +1,9 @@
 import { Query } from 'mysql2/typings/mysql/lib/protocol/sequences/Query'
 import {pool} from './conn'
-import { apiKey, countKeysExists, updateQueryRes } from '../dtos/apiKey.dto'
+import { apiKey} from '../dtos/apiKey.dto'
+import { countKeysExists, updateQueryRes } from '../dtos/global.dto'
+import {hashedPassword,checkPasswords,encryptKey,decryptKey} from '../utils/helper'
+import { v4 as uuidv4 } from 'uuid';
 
 export const find = async (api_key:string)=>{
     try {
@@ -16,7 +19,7 @@ export const find = async (api_key:string)=>{
     }
 }
 
-export const findByCryptedKey= async (crypted_key:string)=>{
+export const find_by_crypted_key= async (crypted_key:string)=>{
     const QUERY = "select api_key,usage_date,usage_count,host  from user_details where api_key = ?"
     console.log("HERE 2")
     try {
@@ -35,7 +38,7 @@ export const findByCryptedKey= async (crypted_key:string)=>{
     }
 }
 
-export const updateUsageCount = async (crypted_key:string,to_zero:boolean)=>{
+export const update_usage_count = async (crypted_key:string,to_zero:boolean)=>{
     let QUERY 
     console.log("to_zero",to_zero)
     
@@ -57,4 +60,29 @@ export const updateUsageCount = async (crypted_key:string,to_zero:boolean)=>{
         console.log("error occured find() ",error)
         throw error
     }
+}
+
+
+export async function  gen_api_key(){
+   
+    let count:countKeysExists
+    let key:string
+    let hashedKey:string
+
+    do {
+        key = uuidv4()
+        const resQuery =  await find(key)
+        count = resQuery as countKeysExists
+
+      }
+      while (count.count_keys >0);
+      console.log("generated key ==>",key)
+      hashedKey = encryptKey(key)
+      console.log("encrypted key ==>",hashedKey)
+      return [key,hashedKey]
+}
+ 
+export async function increment_usage_count(crypted_key:string,to_zero:boolean){
+    const resQuery2:updateQueryRes = await update_usage_count(crypted_key,to_zero) 
+    return resQuery2
 }

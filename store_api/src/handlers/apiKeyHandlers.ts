@@ -1,8 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
-import { find, findByCryptedKey, updateUsageCount } from '../db/apiKeyQueries';
+import { find, find_by_crypted_key, increment_usage_count, update_usage_count } from '../db/apiKeyQueries';
 import bcrypt from "bcryptjs";
 import {hashedPassword,checkPasswords,encryptKey,decryptKey} from '../utils/helper'
-import { apiKey, countKeysExists, updateQueryRes } from '../dtos/apiKey.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { apiKey} from '../dtos/apiKey.dto';
+import { countKeysExists, updateQueryRes } from '../dtos/global.dto';
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -16,29 +17,6 @@ const Max_REQ:number =  MAX_REQ_NUM as number
 //         "XYZ-Token"?: string
 //     }
 // }
-export async function  genApiKey(){
-   
-    let count:countKeysExists
-    let key:string
-    let hashedKey:string
-
-    do {
-        key = uuidv4()
-        const resQuery =  await find(key)
-        count = resQuery as countKeysExists
-
-      }
-      while (count.count_keys >0);
-      console.log("generated key ==>",key)
-      hashedKey = encryptKey(key)
-      console.log("encrypted key ==>",hashedKey)
-      return [key,hashedKey]
-}
-
-export async function incrementUsageCount(crypted_key:string,to_zero:boolean){
-    const resQuery2:updateQueryRes = await updateUsageCount(crypted_key,to_zero) 
-    return resQuery2
-}
 
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
@@ -49,7 +27,7 @@ export async function validateApiKey(request:Request,response:Response,next:Next
         const key:any = request.get('x-api-key')
         const crypted_key = encryptKey(key)
         console.log("crypted_key",crypted_key)
-        const resQuery:apiKey = await findByCryptedKey(crypted_key)
+        const resQuery:apiKey = await find_by_crypted_key(crypted_key)
         console.log("resQuery",resQuery);
         
         if(resQuery){
@@ -76,7 +54,7 @@ export async function validateApiKey(request:Request,response:Response,next:Next
                     response.status(401).send("Daily limit reached") 
                 }else{
                     //++ usage_count
-                    const rowsRes:updateQueryRes = await incrementUsageCount(crypted_key,false)
+                    const rowsRes:updateQueryRes = await increment_usage_count(crypted_key,false)
                     if(rowsRes.affectedRows == 1){
                         next()
                     }else{
@@ -85,7 +63,7 @@ export async function validateApiKey(request:Request,response:Response,next:Next
                 }
             }else{
                     // usage_count = 1
-                    const rowsRes :updateQueryRes = await incrementUsageCount(crypted_key,true)
+                    const rowsRes :updateQueryRes = await increment_usage_count(crypted_key,true)
                     if(rowsRes.affectedRows == 1){
                         next()
                     }else{
