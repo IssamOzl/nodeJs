@@ -5,31 +5,42 @@ import { v4 as uuidv4 } from 'uuid';
 import { apiKey} from '../dtos/apiKey.dto';
 import { countKeysExists, updateQueryRes } from '../dtos/global.dto';
 import { Request, Response, NextFunction } from 'express';
+import { query,header, matchedData, validationResult } from 'express-validator';
 import dotenv from 'dotenv';
+import { log } from 'console';
 dotenv.config();
 
 const MAX_REQ_NUM:any = process.env.MAX_REQ_NUM 
 const Max_REQ:number =  MAX_REQ_NUM as number
-// import { IncomingHttpHeaders } from 'http';
 
-// declare module 'http' {
-//     interface IncomingHttpHeaders {
-//         "XYZ-Token"?: string
-//     }
-// }
+export function validateApiKeyValidation(request:Request,response:Response,next:NextFunction)
+{
+    
+    const key:string = request.get('x-api-key') as string
+    if(key && key.length>20 ) {
+        next()
+    }else{
+        response.status(401).send("ApiKey must be at least 20 carracters");
+    }
 
+}
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
-    console.log("validateApiKey ...");
+    const result = validationResult(request);
+    if (result.isEmpty()) {
+        console.log("EMpty");
+    }
+    else
+    { 
+        response.send({ errors: result.array() });
+    }
+
    if(request.get('x-api-key'))
     {
         // get details based on APIKEY
         const key:any = request.get('x-api-key')
         const crypted_key = encryptKey(key)
-        console.log("crypted_key",crypted_key)
-        const resQuery:apiKey = await find_by_crypted_key(crypted_key)
-        console.log("resQuery",resQuery);
-        
+        const resQuery:apiKey = await find_by_crypted_key(crypted_key)        
         if(resQuery){
             // if(resQuery.host == request.get('host')){
 
@@ -43,10 +54,6 @@ export async function validateApiKey(request:Request,response:Response,next:Next
             if(resQuery.usage_date){
                 lastConnDate =  resQuery.usage_date.toISOString().split('T')[0]
             }
-
-            console.log("toDay =>",toDay)
-            console.log("lastConnDate =>",lastConnDate)
-
            if(toDay==lastConnDate){ 
            // for test  
            //if('2024-06-30'==lastConnDate){ 

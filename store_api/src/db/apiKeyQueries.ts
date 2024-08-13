@@ -21,16 +21,11 @@ export const find = async (api_key:string)=>{
 
 export const find_by_crypted_key= async (crypted_key:string)=>{
     const QUERY = "select api_key,usage_date,usage_count,host  from user_details where api_key = ?"
-    console.log("HERE 2")
     try {
-        console.log("HERE 3")
         const client = await pool.getConnection()
-        console.log("HERE 4 ")
         const rows:any = await client.query(QUERY,[crypted_key])
-        console.log("res => ",rows);
         client.release();
         const api_key = rows[0][0] as apiKey
-        console.log("api_key",api_key);
         
         return api_key
     } catch (error) {
@@ -40,7 +35,6 @@ export const find_by_crypted_key= async (crypted_key:string)=>{
 
 export const update_usage_count = async (crypted_key:string,to_zero:boolean)=>{
     let QUERY 
-    console.log("to_zero",to_zero)
     
     if(!to_zero) {
         QUERY= "update user_details set usage_count = (usage_count+1), usage_date = ? where api_key = ? "
@@ -50,14 +44,12 @@ export const update_usage_count = async (crypted_key:string,to_zero:boolean)=>{
     try {
         const client = await pool.getConnection()
         const tod = new Date().toISOString().split('T')[0];
-        console.log(QUERY,"QUERY");
         
         const res = await client.query(QUERY,[tod,String(crypted_key)])
         client.release();
         const affectedRows:updateQueryRes = res[0] as  updateQueryRes
         return affectedRows
     } catch (error) {
-        console.log("error occured find() ",error)
         throw error
     }
 }
@@ -76,9 +68,7 @@ export async function  gen_api_key(){
 
       }
       while (count.count_keys >0);
-      console.log("generated key ==>",key)
       hashedKey = encryptKey(key)
-      console.log("encrypted key ==>",hashedKey)
       return [key,hashedKey]
 }
  

@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction,Request,Response } from 'express';
 import { find } from "../db/paramsQueries";
 import { Send } from "express-serve-static-core";
 import { get_all_products_request, get_product_details_request, get_products_by_category_request, product } from "../dtos/products.dto";
 import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_prods } from "../db/productsQueries";
 import { off } from "process";
-
+import { check, query, ValidationError, validationResult } from "express-validator";
+import { trace } from 'console';
 
 export async function get_latest_ten_prods(request:Request,response:Response<product[]>){
     try {
@@ -20,22 +21,47 @@ export async function get_latest_ten_prods(request:Request,response:Response<pro
         return response.status(500)
     }
 }
-export async function get_prods_by_category(request:Request<{},{},{},get_products_by_category_request>,response:Response<product[]>){
+export const get_prods_by_category_validation  =[
+    
+    query("category_id")
+        .exists().withMessage("missing parameter : category")
+        .isString().withMessage("category_id must be a string"), 
+        query("limit")
+        .optional()
+        .isInt({min:1}).withMessage("limit must be greater than 0"),
+        query("offset")
+        .optional()
+        .isInt({min:0}).withMessage("offset must be greater or equal 0")
+    ];
+ 
+export async function get_prods_by_category(request:Request<{},{},{},get_products_by_category_request> ,response:Response<product[]|{"Errors":ValidationError[]}>){
+    console.log("hola2");
+    
     try {
+    
+    const resValidation = validationResult(request);
+    
+    if (!resValidation.isEmpty()) {
+        console.log("resValidation =>",resValidation);
+        
+        response.status(401).send({"Errors":resValidation.array()} );
+    }
+
 
         // TODO : validation
         // must be positive numbers
-        const categorie_id:number = request.query.category_id;
+       // const{ category_id ,limit,offset} = request.query as unknown as get_products_by_category_request
+
+        const category_id:number = request.query.category_id;
         const limit:number = request.query.limit;
         const offset:number = request.query.offset;
 
-        const prods:product[] = await prods_by_category(categorie_id,limit,offset,true)
+        const prods:product[] = await prods_by_category(category_id,limit,offset,true)
         if(prods){
             return response.send(prods)
         }else{
             return response.status(500)
         }
-        
     } catch (error) {
         //throw error
         return response.status(500)
@@ -61,6 +87,8 @@ export async function get_active_prods_by_category(request:Request<{},{},{},get_
         return response.status(500)
     }
 } 
+
+
 export async function get_all_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]>){
     try {
 

@@ -1,5 +1,5 @@
 import  express, {  Request, Response, Router } from "express";
-import {genApiKey,validateApiKey} from '../handlers/apiKeyHandlers' 
+import {validateApiKey} from '../handlers/apiKeyHandlers' 
 
 const route:Router = Router()
 
