@@ -6,6 +6,7 @@ import categoriesRoute from "./routes/categoriesRoute"
 import productsRoute from "./routes/productsRoute"
 import usersRoute from "./routes/usersRoute"
 import {validateApiKey, validateApiKeyValidation} from "./handlers/apiKeyHandlers";
+import {limiter} from "./handlers/rateLimiter"
 
 dotenv.config();
 const app = express()
@@ -13,6 +14,9 @@ const PORT:number = Number(process.env.SERVER_PORT) || 3000
 
 
 app.use(express.json())
+
+// rate limiter by ip adress
+app.use(limiter)
 
 // validate API key
 app.use(validateApiKeyValidation,validateApiKey)

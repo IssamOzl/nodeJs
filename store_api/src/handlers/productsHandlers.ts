@@ -5,7 +5,7 @@ import { get_all_products_request, get_product_details_request, get_products_by_
 import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_prods } from "../db/productsQueries";
 import { off } from "process";
 import { body, check, query, ValidationError, validationResult } from "express-validator";
-import { trace } from 'console';
+import { log, trace } from 'console';
 import { validationErrorArray } from '../dtos/global.dto';
 
 export async function get_latest_ten_prods(request:Request,response:Response<product[]>){
@@ -119,7 +119,8 @@ export async function get_all_prods(request:Request<{},{},{},get_all_products_re
 } 
 export async function get_all_active_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray>){
     try {
-
+        console.log(request.ip);
+        
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
