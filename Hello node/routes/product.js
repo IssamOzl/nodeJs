@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/product");
+const { param,query, validationResult, header } = require("express-validator");
 
 router.post("/addproduct",(req,res)=>{
     const prd = new Product(req.body)
@@ -29,15 +30,23 @@ router.get("/getallproducts",(req,res)=>{
 	)
 })
 
-router.get("/getproductbyid/:id",(req,res)=>{
-
-    Product.findById(req.params.id)
-    .then((data)=>{
-        res.status(200).send(data)
-    })
-    .catch((err)=>{
-        res.status(400).send(err)
-    })
+router.get("/getproductbyid/:id/:tst",
+        
+            [param("id")
+                .isInt().withMessage("ID must be int"),
+            param("tst")
+                .isInt().withMessage("tst must be int")]
+    
+    ,(req,res)=>{
+        const result = validationResult(req);
+        if (result.isEmpty()) {
+            console.log("EMpty");
+        }
+        else
+        { 
+            res.send({ errors: result.array() });
+        }
+    
 })
 
 router.delete("/deleteproduct/:id",(req,res)=>{
