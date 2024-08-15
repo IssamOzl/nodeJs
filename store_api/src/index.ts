@@ -15,7 +15,7 @@ const PORT:number = Number(process.env.SERVER_PORT) || 3000
 app.use(express.json())
 
 // validate API key
-//app.use(validateApiKeyValidation,validateApiKey)
+app.use(validateApiKeyValidation,validateApiKey)
 // routes
 app.use("/api/v1/params",paramsRoute)
 app.use("/api/v1/categories",categoriesRoute)

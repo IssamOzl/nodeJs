@@ -63,6 +63,7 @@ export const latest_ten_prods = async() => {
 
 export const prods_by_category = async(categorie_id:number=-1,limit:number=-1,offset:number=-1,all:boolean=true) => { 
 
+    console.log("limit",limit)
     if(categorie_id != -1){
         try {
             let QUERY:string= "SELECT * FROM product as prd WHERE  category_id = ? ";
@@ -80,7 +81,7 @@ export const prods_by_category = async(categorie_id:number=-1,limit:number=-1,of
                 offset= 0
             }
             QUERY +=" OFFSET "+offset
-
+            
             const client = await pool.getConnection()
             const [rows, fields]= await client.query(QUERY,[categorie_id])
             client.release();
@@ -135,28 +136,33 @@ export const prod_details = async (slug:string)=>{
         const [rows,fields] = await client.query(QUERY,[slug])
         client.release
         const prods:product[] = rows as product[]
+        if(prods.length>0)
+        {
+            const thumb_name:productThumb = await product_thumb_name(slug)
+            prods[0].thumbnail = thumb_name.name_image
+            
+            const images:productImage[] = await product_images(slug)
+            prods[0].images = images
+            
+            const reviews:productReview[] = await prod_Reviews(slug)
+            prods[0].reviews = reviews
 
-        const thumb_name:productThumb = await product_thumb_name(slug)
-        prods[0].thumbnail = thumb_name.name_image
-        
-        const images:productImage[] = await product_images(slug)
-        prods[0].images = images
-        
-        const reviews:productReview[] = await prod_Reviews(slug)
-        prods[0].reviews = reviews
+            const variations:productVariations[] = await stock_product(slug)
+            prods[0].variations = variations
 
-        const variations:productVariations[] = await stock_product(slug)
-        prods[0].variations = variations
+            prods[0].comments_count = reviews.length
+            let note:number = 0
 
-        prods[0].comments_count = reviews.length
-        let note:number = 0
-
-        reviews.map((review: productReview, index: number) => {
-            note+=review.review_note
-        });
-        prods[0].note = note
-
+            reviews.map((review: productReview, index: number) => {
+                note+=review.review_note
+            });
+            prods[0].note = note
+            
+        }
         return prods
+        
+        
+       
     } catch (error) {
         throw error
     }

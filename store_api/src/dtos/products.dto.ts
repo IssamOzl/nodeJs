@@ -1,7 +1,5 @@
+import { activeOrNot } from "./global.dto"
 import { productReview } from "./reviews.dto"
-
-type activeOrNot= "active"|"inactive"
-
 
 export interface product{
     "product_id": number
@@ -49,9 +47,9 @@ export interface productsResponseWithCount{
     "count":number
 }
 export interface get_products_by_category_request{
-    "category_id":number
-    "limit":number
-    "offset":number
+    category_id:number
+    limit:number
+    offset:number
 }
 export interface get_all_products_request{
     "limit":number

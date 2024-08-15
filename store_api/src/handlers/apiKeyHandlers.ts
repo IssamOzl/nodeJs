@@ -13,9 +13,10 @@ dotenv.config();
 const MAX_REQ_NUM:any = process.env.MAX_REQ_NUM 
 const Max_REQ:number =  MAX_REQ_NUM as number
 
+
 export function validateApiKeyValidation(request:Request,response:Response,next:NextFunction)
 {
-    
+   
     const key:string = request.get('x-api-key') as string
     if(key && key.length>20 ) {
         next()
@@ -26,6 +27,7 @@ export function validateApiKeyValidation(request:Request,response:Response,next:
 }
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
+    console.log('hello 1')
     const result = validationResult(request);
     if (result.isEmpty()) {
         console.log("EMpty");
