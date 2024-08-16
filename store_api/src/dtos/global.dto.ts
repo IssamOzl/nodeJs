@@ -6,6 +6,9 @@ export interface countKeysExists{
 export interface updateQueryRes{
     "affectedRows":number
 }
+export interface insertQueryRes{
+    "insertId":number
+}
 export type activeOrNot= "active"|"inactive"
 export interface validationErrorArray{
      "Errors":ValidationError[]

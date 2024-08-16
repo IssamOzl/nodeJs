@@ -5,6 +5,8 @@ import paramsRoute from "./routes/paramsRoute"
 import categoriesRoute from "./routes/categoriesRoute"
 import productsRoute from "./routes/productsRoute"
 import usersRoute from "./routes/usersRoute"
+import ordersRoute from "./routes/orderRoute"
+import shippingCompaniesRoute from "./routes/shippingCompaniesRoute"
 import {validateApiKey, validateApiKeyValidation} from "./handlers/apiKeyHandlers";
 import {limiter} from "./handlers/rateLimiter"
 
@@ -25,6 +27,8 @@ app.use("/api/v1/params",paramsRoute)
 app.use("/api/v1/categories",categoriesRoute)
 app.use("/api/v1/products",productsRoute)
 app.use("/api/v1/users/",usersRoute)
+app.use("/api/v1/shipping_companies/",shippingCompaniesRoute)
+app.use("/api/v1/orders/",ordersRoute)
 
 
 connectToDb()
