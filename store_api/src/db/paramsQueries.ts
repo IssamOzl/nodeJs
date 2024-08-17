@@ -4,8 +4,8 @@ import { params } from '../dtos/params.dto'
 
 
 export const find = async() => { 
-    let QUERY = "select * from general_settings;"
     try {
+        let QUERY = "select * from general_settings;"
         const client = await pool.getConnection()
         const [rows, fields]= await client.query(QUERY)
         client.release();

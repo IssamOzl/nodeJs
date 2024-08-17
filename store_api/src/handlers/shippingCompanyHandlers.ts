@@ -13,7 +13,7 @@ export async function get_active_shipping_companies(request:Request,response:Res
 
 export async function get_default_shipping_company(request:Request,response:Response) {
     try {
-        console.log("get_default_shipping_company");
+       
         
         const defShippingCompany : shippingCompany = await default_shipping_company()
         return response.status(200).send(defShippingCompany)

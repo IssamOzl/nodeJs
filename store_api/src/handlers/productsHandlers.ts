@@ -119,8 +119,6 @@ export async function get_all_prods(request:Request<{},{},{},get_all_products_re
 } 
 export async function get_all_active_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray>){
     try {
-        console.log(request.ip);
-        
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {

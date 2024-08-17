@@ -27,15 +27,14 @@ export function validateApiKeyValidation(request:Request,response:Response,next:
 }
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
-    console.log('hello 1')
-    const result = validationResult(request);
-    if (result.isEmpty()) {
-        console.log("EMpty");
-    }
-    else
-    { 
-        response.send({ errors: result.array() });
-    }
+    // const result = validationResult(request);
+    // if (result.isEmpty()) {
+    //     console.log("EMpty");
+    // }
+    // else
+    // { 
+    //     response.send({ errors: result.array() });
+    // }
 
    if(request.get('x-api-key'))
     {

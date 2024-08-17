@@ -20,15 +20,10 @@ export const active_shipping_companies = async ()=>{
 }
 export const default_shipping_company = async ()=>{
     try {
-       
-        // TODO: check error returned by thi commented query / can not recognise added field default
-
         const QUERY="select shipping_id ,shipping_name ,shipping_status FROM `inventory_order_shipping` WHERE shipping_default=1;"
         //const QUERY="select shipping_id ,shipping_name ,shipping_status FROM `inventory_order_shipping` WHERE shipping_id = (select min(shipping_id) from inventory_order_shipping where  `shipping_status`=1 limit 1);"
         const client = await pool.getConnection()
-        const rows:any = await pool.query(QUERY)
-        console.log(rows);
-        
+        const rows:any = await pool.query(QUERY)        
         client.release() 
 
         const defShippingCompany:shippingCompany = rows[0]  as shippingCompany      
