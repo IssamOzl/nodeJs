@@ -1,6 +1,6 @@
 import { find, find_by_crypted_key, increment_usage_count, update_usage_count } from '../db/apiKeyQueries';
 import bcrypt from "bcryptjs";
-import {hashedPassword,checkPasswords,encryptKey,decryptKey} from '../utils/helper'
+import {hashedPassword,checkPasswords,encryptKey,decryptKey, formatDbErrorMessage} from '../utils/helper'
 import { v4 as uuidv4 } from 'uuid';
 import { apiKey} from '../dtos/apiKey.dto';
 import { countKeysExists, updateQueryRes } from '../dtos/global.dto';
@@ -19,9 +19,9 @@ export function validateApiKeyValidation(request:Request,response:Response,next:
    
     const key:string = request.get('x-api-key') as string
     if(key && key.length>20 ) {
-        next()
+        return next()
     }else{
-        response.status(401).send("ApiKey must be at least 20 carracters");
+        return response.status(401).send("ApiKey must be at least 20 carracters");
     }
 
 }
@@ -35,55 +35,61 @@ export async function validateApiKey(request:Request,response:Response,next:Next
     // { 
     //     response.send({ errors: result.array() });
     // }
+    try {
+        if(request.get('x-api-key'))
+        {
+            // get details based on APIKEY
+            const key:any = request.get('x-api-key')
+            const crypted_key = encryptKey(key)
+            const resQuery:apiKey = await find_by_crypted_key(crypted_key)        
+            if(resQuery){
+                // if(resQuery.host == request.get('host')){
 
-   if(request.get('x-api-key'))
-    {
-        // get details based on APIKEY
-        const key:any = request.get('x-api-key')
-        const crypted_key = encryptKey(key)
-        const resQuery:apiKey = await find_by_crypted_key(crypted_key)        
-        if(resQuery){
-            // if(resQuery.host == request.get('host')){
+                // }else{
+                //     response.status(401).send("Not authorized") 
+                // }
+                const date:Date =  new Date(Date.now()-86400000)
+                const toDay = date.toISOString().split('T')[0]
+                let lastConnDate=""
 
-            // }else{
-            //     response.status(401).send("Not authorized") 
-            // }
-            const date:Date =  new Date(Date.now()-86400000)
-            const toDay = date.toISOString().split('T')[0]
-            let lastConnDate=""
-
-            if(resQuery.usage_date){
-                lastConnDate =  resQuery.usage_date.toISOString().split('T')[0]
-            }
-           if(toDay==lastConnDate){ 
-           // for test  
-           //if('2024-06-30'==lastConnDate){ 
-                if(resQuery.usage_count > Max_REQ){
-                    response.status(401).send("Daily limit reached") 
-                }else{
-                    //++ usage_count
-                    const rowsRes:updateQueryRes = await increment_usage_count(crypted_key,false)
-                    if(rowsRes.affectedRows == 1){
-                        next()
+                if(resQuery.usage_date){
+                    lastConnDate =  resQuery.usage_date.toISOString().split('T')[0]
+                }
+            if(toDay==lastConnDate){ 
+            // for test  
+            //if('2024-06-30'==lastConnDate){ 
+                    if(resQuery.usage_count > Max_REQ){
+                        return response.status(401).send("Daily limit reached") 
                     }else{
-                        response.status(500).send("Internal Server Error")
+                        //++ usage_count
+                        const rowsRes:updateQueryRes = await increment_usage_count(crypted_key,false)
+                        if(rowsRes.affectedRows == 1){
+                            return  next()
+                        }else{
+                            return response.status(500).send("Internal Server Error")
+                        }
                     }
+                }else{
+                        // usage_count = 1
+                        const rowsRes :updateQueryRes = await increment_usage_count(crypted_key,true)
+                        if(rowsRes.affectedRows == 1){
+                            next()
+                        }else{
+                            return  response.status(500).send("Internal Server Error")
+                        }
                 }
             }else{
-                    // usage_count = 1
-                    const rowsRes :updateQueryRes = await increment_usage_count(crypted_key,true)
-                    if(rowsRes.affectedRows == 1){
-                        next()
-                    }else{
-                        response.status(500).send("Internal Server Error")
-                    }
+                response.status(401).send("Not authorized") 
             }
         }else{
-            response.status(401).send("Not authorized") 
+            response.status(401).send("Missing x-api-key")
         }
-    }else{
-        response.status(401).send("Missing x-api-key")
+    } catch (error) {
+        
+        return response.status(500).send(formatDbErrorMessage(error))
     }
+
+  
 }
  
 

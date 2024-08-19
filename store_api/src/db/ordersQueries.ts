@@ -2,7 +2,7 @@ import { Query } from 'mysql2/typings/mysql/lib/protocol/sequences/Query'
 import {pool} from './conn'
 import { order } from '../dtos/orders.dto'
 import { log } from 'console'
-import { insertQueryRes } from '../dtos/global.dto'
+import { dbError, insertQueryRes } from '../dtos/global.dto'
 
 export async function add(orderInfos:order) {
     try {
@@ -67,8 +67,7 @@ export async function add(orderInfos:order) {
         
         return insertedId
     } catch (error) {
-        console.log({errors:error});
-        
+    
         throw error
     }
 }

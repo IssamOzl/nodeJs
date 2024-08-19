@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { userIdParam } from "../dtos/users.dto";
 import { api_key_to_user } from "../db/usersQueries";
 import { body, validationResult } from "express-validator";
+import { formatDbErrorMessage } from "../utils/helper";
 
 //    "user_id":number "host":string
 export const generate_api_key_validation = [
@@ -32,6 +33,6 @@ export async function generate_api_key(request:Request<{},{},userIdParam>,respon
         }
  
     } catch (error) {
-        return response.sendStatus(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 }

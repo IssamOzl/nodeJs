@@ -27,5 +27,4 @@ interface order_product{
     product_id :number
     quantity :number
     tax :number
-    variation_name :string
 }

@@ -13,3 +13,11 @@ export type activeOrNot= "active"|"inactive"
 export interface validationErrorArray{
      "Errors":ValidationError[]
 }
+export interface dbError{
+    "message":string,
+    "code":string,
+    "errno":number
+}
+export interface dbErrorReturn{
+    "error":dbError
+}
