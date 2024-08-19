@@ -2,20 +2,17 @@ import { Request, Response } from "express";
 import { find } from "../db/paramsQueries";
 import { params, getParamByName, getParamByNameVal } from "../dtos/params.dto";
 import { Send } from "express-serve-static-core";
+import { dbErrorReturn } from "../dtos/global.dto";
+import { formatDbErrorMessage } from "../utils/helper";
 
 
-export async function getParams(request:Request,response:Response<params>){
+export async function getParams(request:Request,response:Response<params|dbErrorReturn>){
     try {
         const params:params = await find()
-        if(params){
-            return response.send(params)
-        }else{
-            return response.status(500)
-        }
-        
+        return response.send(params)
     } catch (error) {
         //throw error
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 
     

@@ -6,7 +6,8 @@ import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_pr
 import { off } from "process";
 import { body, check, query, ValidationError, validationResult } from "express-validator";
 import { log, trace } from 'console';
-import { validationErrorArray } from '../dtos/global.dto';
+import { dbErrorReturn, validationErrorArray } from '../dtos/global.dto';
+import { formatDbErrorMessage } from '../utils/helper';
 
 export async function get_latest_ten_prods(request:Request,response:Response<product[]>){
     try {
@@ -34,7 +35,7 @@ export const get_prods_by_category_validation  = [
         .isInt({min:0}).withMessage("offset must be greater or equal 0")
 ];
  
-export async function get_prods_by_category(request:Request<{},{},{},get_products_by_category_request> ,response:Response<product[]|validationErrorArray>){
+export async function get_prods_by_category(request:Request<{},{},{},get_products_by_category_request> ,response:Response<product[]|validationErrorArray|dbErrorReturn>){
     try {
     
         const resValidation = validationResult(request);
@@ -57,10 +58,10 @@ export async function get_prods_by_category(request:Request<{},{},{},get_product
         }
     } catch (error) {
         //throw error
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 } 
-export async function get_active_prods_by_category(request:Request<{},{},{},get_products_by_category_request>,response:Response<product[]|validationErrorArray>){
+export async function get_active_prods_by_category(request:Request<{},{},{},get_products_by_category_request>,response:Response<product[]|validationErrorArray|dbErrorReturn>){
     try {
 
         const resValidation = validationResult(request);
@@ -73,15 +74,11 @@ export async function get_active_prods_by_category(request:Request<{},{},{},get_
         const offset:number = request.query.offset;
 
         const prods:product[] = await prods_by_category(category_id,limit,offset,false)
-        if(prods){
-            return response.send(prods)
-        }else{
-            return response.status(500)
-        }
+        return response.send(prods)
         
     } catch (error) {
         //throw error
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 } 
 
@@ -94,7 +91,7 @@ export const get_all_prods_validation  = [
         .optional()
         .isInt({min:0}).withMessage("offset must be greater or equal 0")
 ];
-export async function get_all_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray>){
+export async function get_all_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray|dbErrorReturn>){
     try {
         const resValidation = validationResult(request);
         
@@ -106,18 +103,14 @@ export async function get_all_prods(request:Request<{},{},{},get_all_products_re
         const offset:number = request.query.offset;
 
         const prods:product[] = await all_prods(limit,offset,true)
-        if(prods){
-            return response.send(prods)
-        }else{
-            return response.status(500)
-        }
+        return response.send(prods)
         
     } catch (error) {
         //throw error
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 } 
-export async function get_all_active_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray>){
+export async function get_all_active_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray|dbErrorReturn>){
     try {
         const resValidation = validationResult(request);
         
@@ -129,15 +122,11 @@ export async function get_all_active_prods(request:Request<{},{},{},get_all_prod
         const offset:number = request.query.offset;
 
         const prods:product[] = await all_prods(limit,offset,false)
-        if(prods){
-            return response.send(prods)
-        }else{
-            return response.status(500)
-        }
+        return response.send(prods)
         
     } catch (error) {
         //throw error
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 } 
 export const get_product_details_validation = [
@@ -145,7 +134,7 @@ export const get_product_details_validation = [
         .exists().withMessage("Missing body parameter : slug")
         .isLength({ min: 8 })
 ]
-export async function get_product_details(request:Request<{},{},get_product_details_request>,response:Response<product|validationErrorArray>) {
+export async function get_product_details(request:Request<{},{},get_product_details_request>,response:Response<product|validationErrorArray|dbErrorReturn>) {
     try {
         const resValidation = validationResult(request);
         
@@ -166,11 +155,11 @@ export async function get_product_details(request:Request<{},{},get_product_deta
         }
 
     } catch (error) {
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 }
 
-export async function get_random_products(request:Request<{},{},get_product_details_request>,response:Response<product[]|validationErrorArray>) {
+export async function get_random_products(request:Request<{},{},get_product_details_request>,response:Response<product[]|validationErrorArray|dbErrorReturn>) {
     try {
         const resValidation = validationResult(request);
         
@@ -191,6 +180,6 @@ export async function get_random_products(request:Request<{},{},get_product_deta
 
     } catch (error) {
        
-        return response.status(500)
+        return response.status(500).send(formatDbErrorMessage(error))
     }
 }

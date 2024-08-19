@@ -67,7 +67,6 @@ export async function add(orderInfos:order) {
         
         return insertedId
     } catch (error) {
-    
         throw error
     }
 }
