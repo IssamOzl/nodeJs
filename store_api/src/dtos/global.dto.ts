@@ -9,7 +9,9 @@ export interface updateQueryRes{
 export interface insertQueryRes{
     "insertId":number
 }
-export type activeOrNot= "active"|"inactive"
+export type activeInDb ="active"
+export type inactiveInDb ="inactive"
+export type activeOrNot= activeInDb|inactiveInDb
 export interface validationErrorArray{
      "Errors":ValidationError[]
 }

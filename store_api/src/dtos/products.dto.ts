@@ -39,6 +39,7 @@ export interface productVariations{
     "status":activeOrNot
     "stock":number
     "placement":string
+    "id_produit":number
 }
 
 
@@ -57,4 +58,8 @@ export interface get_all_products_request{
 }
 export interface get_product_details_request{
     "slug":string
+}
+export interface prodBasePriceShipping{
+    "product_base_price":number
+    "free_shipping":0|1
 }

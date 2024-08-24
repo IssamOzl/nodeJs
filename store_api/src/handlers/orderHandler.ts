@@ -2,13 +2,17 @@ import Express,{ Request, Response, NextFunction } from 'express';
 import { order } from '../dtos/orders.dto';
 import { add } from '../db/ordersQueries';
 import {body,validationResult,ValidationError, ExpressValidator} from 'express-validator'
-import { countKeysExists, dbErrorReturn, insertQueryRes, validationErrorArray } from '../dtos/global.dto';
+import { countKeysExists, dbErrorReturn, insertQueryRes, validationErrorArray,activeInDb } from '../dtos/global.dto';
 import { CustomValidation } from 'express-validator/lib/context-items';
 import { log } from 'console';
 import { DB_HOST } from '../utils/consts';
 import { formatDbErrorMessage } from '../utils/helper';
 import { shipping_id_count } from '../db/shippingCompanies';
+import {count_id_in_table} from '../db/globalQueries'
+import { check_variation_stock } from '../db/productsQueries';
+import { productVariations } from '../dtos/products.dto';
  
+let variation:productVariations
 
 // validation chain to validate the object sent
 export const place_order_validation = [
@@ -23,17 +27,24 @@ export const place_order_validation = [
         .optional()
         .isInt({min:1}).withMessage("order_shipping must be a positive number")
         .custom(async (value) => {
-            const existOrderShipping:countKeysExists = await shipping_id_count(value);
+            const existOrderShipping:countKeysExists = await count_id_in_table("inventory_order_shipping","shipping_id",value);
             if (existOrderShipping.count_keys <=0) {
               // Will use the below as the error message
               throw new Error('wrong order_shipping passed');
-              
             }
         })
         ,
     body("order_shipping_id") // optional if not exist will be replaced by the default shipping company
         .optional()
-        .isInt({min:1}).withMessage("order_shipping_id must be a positive number"),
+        .isInt({min:1}).withMessage("order_shipping_id must be a positive number")
+        .custom(async (value) => {
+            const existOrderShipping:countKeysExists = await count_id_in_table("inventory_order_shipping","shipping_id",value);
+            
+            if (existOrderShipping.count_keys <=0) {
+              // Will use the below as the error message
+              throw new Error('wrong order_shipping_id passed');
+            }
+        }),
     // body("order_created_date") // optional if not exist will be replaced by the today's date
     //     .optional()
     //     .isDate({format: 'YYYY-MM-DD'}).withMessage("order_created_date must respect this format : YYYY-MM-DD"), 
@@ -41,7 +52,14 @@ export const place_order_validation = [
         .optional()
         .isDate({format: 'YYYY-MM-DD'}).withMessage("order_date must respect this format : YYYY-MM-DD"),  
     body("order_shipping_city") // the existance of the id passed will verified later
-        .isInt({min:1}).withMessage("order_shipping_city must be a positive number"),  
+        .isInt({min:1}).withMessage("order_shipping_city must be a positive number")
+        .custom(async (value)=>{
+            const existShippingCity:countKeysExists = await count_id_in_table("inventory_order_city","id",value);
+            if (existShippingCity.count_keys <=0) {
+              // Will use the below as the error message
+              throw new Error('wrong order_shipping_city passed');
+            }
+        }),  
     body("order_shipping_cost")// from the shipping city we will get the cost
         .optional()
         .isInt({min:0}).withMessage("order_shipping_cost must be >= 0"),        
@@ -57,15 +75,51 @@ export const place_order_validation = [
         .equals("cash"||"credit").withMessage("payment_status must have one of these values : cash, credit"),
     body("user_id") // check if the user id passed exist's in db, if not will be replaced by null
         .optional()
-        .isInt({min:0}).withMessage("user_id mut be a positive number"),     
+        .isInt({min:1}).withMessage("user_id mut be a positive number")
+        .custom(async (value)=>{
+            const existUserId:countKeysExists = await count_id_in_table("user_details","user_id",value);
+            if (existUserId.count_keys <=0) {
+              // Will use the below as the error message
+              throw new Error('wrong user_id passed');
+            }
+        }),     
     body("products")
-        .isArray({ min: 1}).withMessage("You can not place an order without products !"),
-    body("products.*.id_variation") // check later if the id exists and has apositive stock 
-        .isInt({min:1}).withMessage("id_variation must be an integer >=1"),  
-    body("products.*.product_id") // check later if the id exists and has apositive stock 
-        .isInt({min:1}).withMessage("product_id must be an integer >=1"),
-    body("products.*.quantity") // check later if the id exists and has apositive stock 
+        .isArray({ min: 1}).withMessage("You can not place an order without products !"),       
+    body("products.*.id_variation") // check later if the id exists and has a positive stock 
+        .isInt({min:1}).withMessage("id_variation must be an integer >=1")
+        .custom(async (value)=>{
+            const existsVariationId:countKeysExists = await count_id_in_table("product_variations","id",value);
+            if (existsVariationId.count_keys <=0) {
+              // Will use the below as the error message
+              throw new Error('wrong id_variation passed');
+            }else{
+                variation = await check_variation_stock(value)
+                if(variation.status != 'active'){
+                    throw new Error('id_variation is not active');
+                }
+            }
+            
+        }), 
+    body("products.*.product_id") // check later if the id exists and has a positive stock 
+        .isInt({min:1}).withMessage("product_id must be an integer >=1")
+        .custom(async (value)=>{
+            const existsProductId:countKeysExists = await count_id_in_table("product","product_id",value);
+            if (existsProductId.count_keys <=0) {
+                // Will use the below as the error message
+                throw new Error('wrong product_id passed');
+            }
+            // check if variation belong's to product
+            if(value != variation.id_produit){
+                throw new Error('variation does not belong to the product');
+            }
+        }),          
+    body("products.*.quantity") // check later if the id exists and has a positive stock 
         .isInt({min:1}).withMessage("quantity must be an integer >=1")
+        .custom(async (value)=>{
+            if(value>variation.stock){
+                throw new Error('Quantity ordered is bigger than the stock available')
+            }
+        })
     //price will get it from producst_id    
 ]
 

@@ -1,7 +1,6 @@
 import { Query } from 'mysql2/typings/mysql/lib/protocol/sequences/Query'
 import {pool} from './conn'
 import {shippingCompany} from "../dtos/shippingCompanies.dto"
-import { log } from 'console'
 import { countKeysExists } from '../dtos/global.dto'
 
 export const active_shipping_companies = async ()=>{
@@ -54,4 +53,3 @@ export const shipping_id_count = async (shipping_id:number)=>{
         throw error
     }
 }
- 

@@ -1,6 +1,6 @@
 import { Query } from 'mysql2/typings/mysql/lib/protocol/sequences/Query'
 import {pool} from './conn'
-import { product, productImage, productThumb, productVariations } from '../dtos/products.dto';
+import { prodBasePriceShipping, product, productImage, productThumb, productVariations } from '../dtos/products.dto';
 import { productReview } from '../dtos/reviews.dto';
 import { prod_Reviews } from './reviewsQueries';
 
@@ -171,7 +171,7 @@ export const prod_details = async (slug:string)=>{
 export const random_prods = async(slug:string,count:number)=>{
    try
    {
-    let QUERY="SELECT * FROM product as prd WHERE  prd.product_status ='active' and slug != ? and prd.product_id in (SELECT `id_produit` FROM `product_variations` WHERE `status` = 'active' and stock >0 ) ORDER BY rand() LIMIT ?"
+        let QUERY="SELECT * FROM product as prd WHERE  prd.product_status ='active' and slug != ? and prd.product_id in (SELECT `id_produit` FROM `product_variations` WHERE `status` = 'active' and stock >0 ) ORDER BY rand() LIMIT ?"
         const client = await pool.getConnection()
         const [rows, fields]= await client.query(QUERY,[slug,count])
         client.release();
@@ -180,4 +180,32 @@ export const random_prods = async(slug:string,count:number)=>{
     } catch (error) {
         throw error
     }    
+}
+
+export const check_variation_stock = async(id_variation:number)=>{
+    try {
+        let QUERY = "select  id,name,status,stock,placement,id_produit from product_variations where id=? "
+        const client = await pool.getConnection()
+        const rows:any = await client.query(QUERY,[id_variation])
+        client.release();
+        const vars:productVariations = rows[0][0] as productVariations
+        console.log("vars:",vars);
+        
+        return vars
+    } catch (error) {
+        throw error
+    }
+}
+
+export const prod_base_price_shipping = async(id:number)=>{
+    try {
+        let QUERY = "select  product_base_price,free_shipping from product  where product_id=? "
+        const client = await pool.getConnection()
+        const rows:any = await client.query(QUERY,[id])
+        client.release();
+        const basePriceShipping:prodBasePriceShipping = rows[0][0] as prodBasePriceShipping
+        return basePriceShipping
+    } catch (error) {
+        throw error
+    }
 }
