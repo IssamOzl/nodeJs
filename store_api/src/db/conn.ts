@@ -7,7 +7,8 @@ const access: PoolOptions = {
     user:process.env.DB_USER,
     database:process.env.DB_NAME ,
     port:Number(process.env.DB_PORT),
-    password:process.env.DB_PASSWORD
+    password:process.env.DB_PASSWORD,
+    multipleStatements: true
   };
 
   export const pool:Pool = mysql.createPool(access);

@@ -4,13 +4,13 @@ import { add } from '../db/ordersQueries';
 import {body,validationResult,ValidationError, ExpressValidator} from 'express-validator'
 import { countKeysExists, dbErrorReturn, insertQueryRes, validationErrorArray,activeInDb } from '../dtos/global.dto';
 import { CustomValidation } from 'express-validator/lib/context-items';
-import { log } from 'console';
 import { DB_HOST } from '../utils/consts';
 import { formatDbErrorMessage } from '../utils/helper';
 import { shipping_id_count } from '../db/shippingCompanies';
 import {count_id_in_table} from '../db/globalQueries'
 import { check_variation_stock } from '../db/productsQueries';
 import { productVariations } from '../dtos/products.dto';
+import { log } from 'console';
  
 let variation:productVariations
 
@@ -117,6 +117,8 @@ export const place_order_validation = [
         .isInt({min:1}).withMessage("quantity must be an integer >=1")
         .custom(async (value)=>{
             if(value>variation.stock){
+                console.log("value",value)
+                console.log("variation.stock",variation.stock)
                 throw new Error('Quantity ordered is bigger than the stock available')
             }
         })
@@ -130,10 +132,14 @@ export async function place_order(request:Request<{},{},order>,response:Response
             return response.status(401).send({"Errors":resValidation.array()});
         }
         const orderInfos:order = request.body
-        console.log(orderInfos);
         const insertId:insertQueryRes = await add(orderInfos)
-
-        return response.status(201).send(insertId)
+        if(insertId.insertId>0)
+        {
+            log("insertId",insertId)
+            return response.status(201).send()
+        }else{
+            return response.status(500).send(formatDbErrorMessage({"message":"Error occured while handling your request, please try again later."}))
+        }
     } catch (error) {
         return response.status(500).send(formatDbErrorMessage(error))
     }

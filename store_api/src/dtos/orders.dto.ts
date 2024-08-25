@@ -19,7 +19,7 @@ export interface order{
     
 }
 
-interface order_product{
+export interface order_product{
     id_variation :number
     inventory_order_id :number
     inventory_order_product_id :number

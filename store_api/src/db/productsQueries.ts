@@ -3,6 +3,7 @@ import {pool} from './conn'
 import { prodBasePriceShipping, product, productImage, productThumb, productVariations } from '../dtos/products.dto';
 import { productReview } from '../dtos/reviews.dto';
 import { prod_Reviews } from './reviewsQueries';
+import { log } from 'console';
 
 const thumbnail=""
 
@@ -189,15 +190,14 @@ export const check_variation_stock = async(id_variation:number)=>{
         const rows:any = await client.query(QUERY,[id_variation])
         client.release();
         const vars:productVariations = rows[0][0] as productVariations
-        console.log("vars:",vars);
-        
+        log("vars",vars)
         return vars
     } catch (error) {
         throw error
     }
 }
 
-export const prod_base_price_shipping = async(id:number)=>{
+export const prod_base_price_shipping = async(id:number):Promise<prodBasePriceShipping> =>{
     try {
         let QUERY = "select  product_base_price,free_shipping from product  where product_id=? "
         const client = await pool.getConnection()

@@ -7,7 +7,8 @@ export interface updateQueryRes{
     "affectedRows":number
 }
 export interface insertQueryRes{
-    "insertId":number
+    "insertId":number,
+    "affectedRows":number
 }
 export type activeInDb ="active"
 export type inactiveInDb ="inactive"
