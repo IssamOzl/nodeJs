@@ -27,6 +27,7 @@ export function validateApiKeyValidation(request:Request,response:Response,next:
 }
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
+    console.log(request.url)
     // const result = validationResult(request);
     // if (result.isEmpty()) {
     //     console.log("EMpty");

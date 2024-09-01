@@ -3,6 +3,7 @@ import crypto, { BinaryLike } from 'crypto'
 
 import dotenv from 'dotenv';
 import { dbError } from '../dtos/global.dto';
+import { myErrorLogger } from '../handlers/logger';
 dotenv.config();
 
 
@@ -59,5 +60,6 @@ export function decryptKey(encryptedData:string):string{
 }
 export function formatDbErrorMessage(error:any){
     const myError:dbError = error as dbError
+    myErrorLogger.error(error)
     return {"error":{"message":myError.message,"code":myError.code,"errno":myError.errno}}
 } 

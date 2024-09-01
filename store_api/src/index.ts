@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import dotenv from 'dotenv';
 import { connectToDb, pool } from "./db/conn";
 import paramsRoute from "./routes/paramsRoute"
@@ -10,6 +10,12 @@ import shippingCityRoute from "./routes/shippingCitiesRoute"
 import shippingCompaniesRoute from "./routes/shippingCompaniesRoute"
 import {validateApiKey, validateApiKeyValidation} from "./handlers/apiKeyHandlers";
 import {limiter} from "./handlers/rateLimiter"
+import { format, transports } from 'winston';
+import {logger, myErrorLogger} from "./handlers/logger"
+import { error } from 'console';
+
+var winston = require('winston'),
+    expressWinston = require('express-winston');
 
 dotenv.config();
 const app = express()
@@ -21,6 +27,16 @@ app.use(express.json())
 // rate limiter by ip adress
 app.use(limiter)
 
+// logger
+
+
+app.use(expressWinston.logger({
+    winstonInstance: logger,
+    statusLevels:true
+}))
+expressWinston.requestWhitelist.push('body');
+expressWinston.responseWhitelist.push('body');
+
 // validate API key
 app.use(validateApiKeyValidation,validateApiKey)
 // routes
@@ -30,7 +46,13 @@ app.use("/api/v1/products",productsRoute)
 app.use("/api/v1/users/",usersRoute)
 app.use("/api/v1/shipping_companies/",shippingCompaniesRoute)
 app.use("/api/v1/orders/",ordersRoute)
-app.use("/api/v1/shipping/",shippingCityRoute)
+app.use("/api/v1/shipping_cities/",shippingCityRoute)
+
+
+// error formating
+app.use(expressWinston.errorLogger({
+winstonInstance:myErrorLogger
+}))
 
 
 connectToDb()

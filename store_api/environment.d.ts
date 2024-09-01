@@ -10,6 +10,7 @@ declare global {
         MAX_REQ_NUM :number
         SECRET_KEY :string
         SECRET_IV :string
+        NODE_ENV:"prod"|"dev"
       }
     }
   }

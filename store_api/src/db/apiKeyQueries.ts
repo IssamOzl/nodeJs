@@ -4,6 +4,7 @@ import { apiKey} from '../dtos/apiKey.dto'
 import { countKeysExists, updateQueryRes } from '../dtos/global.dto'
 import {hashedPassword,checkPasswords,encryptKey,decryptKey} from '../utils/helper'
 import { v4 as uuidv4 } from 'uuid';
+import { myErrorLogger } from '../handlers/logger'
 
 export const find = async (api_key:string)=>{
     try {
