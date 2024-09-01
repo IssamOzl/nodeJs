@@ -9,7 +9,7 @@ import ordersRoute from "./routes/orderRoute"
 import shippingCityRoute from "./routes/shippingCitiesRoute"
 import shippingCompaniesRoute from "./routes/shippingCompaniesRoute"
 import {validateApiKey, validateApiKeyValidation} from "./handlers/apiKeyHandlers";
-import {limiter} from "./handlers/rateLimiter"
+import {limiter, placeOrderlimiter} from "./handlers/rateLimiter"
 import { format, transports } from 'winston';
 import {logger, myErrorLogger} from "./handlers/logger"
 import { error } from 'console';
@@ -26,6 +26,7 @@ app.use(express.json())
 
 // rate limiter by ip adress
 app.use(limiter)
+ 
 
 // logger
 
