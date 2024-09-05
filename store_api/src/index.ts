@@ -13,6 +13,11 @@ import {limiter, placeOrderlimiter} from "./handlers/rateLimiter"
 import { format, transports } from 'winston';
 import {logger, myErrorLogger} from "./handlers/logger"
 import { error } from 'console';
+import options from './swagger';
+
+const swaggerJsDoc = require("swagger-jsdoc")
+const swaggerUi = require("swagger-ui-express")
+
 
 var winston = require('winston'),
     expressWinston = require('express-winston');
@@ -56,8 +61,14 @@ winstonInstance:myErrorLogger
 }))
 
 
+
+
+const specs = swaggerJsDoc(options)
+
 connectToDb()
     .then(()=>{
+       // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+         app.use("/api/v1/api-docs",swaggerUi.serve,swaggerUi.setup(specs))
          app.listen(PORT,()=>{
             console.log("Listening on PORT ",PORT)
         })

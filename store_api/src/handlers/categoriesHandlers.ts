@@ -8,9 +8,9 @@ export async function getCategories(request:Request,response:Response<categories
     try {
         const cats:categories[] = await find()
         if(cats){
-            return response.send(cats)
+            return response.status(200).send(cats)
         }else{
-            return response.status(500)
+            return response.status(404)
         }
         
     } catch (error) {
@@ -22,9 +22,9 @@ export async function getActiveCategories(request:Request,response:Response<cate
     try {
         const cats:categories[] = await find(false)
         if(cats){
-            return response.send(cats)
+            return response.status(200).send(cats)
         }else{
-            return response.status(500)
+            return response.status(404)
         }
         
     } catch (error) {

@@ -129,13 +129,12 @@ export async function place_order(request:Request<{},{},order>,response:Response
     try {
         const resValidation = validationResult(request)
         if(!resValidation.isEmpty()){
-            return response.status(401).send({"Errors":resValidation.array()});
+            return response.status(400).send({"Errors":resValidation.array()});
         }
         const orderInfos:order = request.body
         const insertId:insertQueryRes = await add(orderInfos)
         if(insertId.insertId>0)
         {
-            log("insertId",insertId)
             return response.status(201).send()
         }else{
             return response.status(500).send(formatDbErrorMessage({"message":"Error occured while handling your request, please try again later."}))

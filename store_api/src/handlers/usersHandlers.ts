@@ -20,7 +20,7 @@ export async function generate_api_key(request:Request<{},{},userIdParam>,respon
 
         const resValidation = validationResult(request)
         if( !resValidation.isEmpty() ){
-           return response.status(401).send({"Errors":resValidation.array()} );
+           return response.status(400).send({"Errors":resValidation.array()} );
         }
 
         const reqBody:userIdParam = request.body

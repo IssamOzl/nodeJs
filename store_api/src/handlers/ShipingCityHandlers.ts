@@ -23,7 +23,7 @@ export async function get_shipping_city_details(request:Request,response:Respons
     try {
         const resValidation = validationResult(request)
         if(!resValidation.isEmpty()){
-            return response.status(401).send({"Errors":resValidation.array()});
+            return response.status(400).send({"Errors":resValidation.array()});
         }
 
         const id:number = request.query.id as unknown as number

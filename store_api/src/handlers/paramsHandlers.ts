@@ -9,7 +9,11 @@ import { formatDbErrorMessage } from "../utils/helper";
 export async function getParams(request:Request,response:Response<params|dbErrorReturn>){
     try {
         const params:params = await find()
-        return response.send(params)
+        if(params){
+            return response.status(200).send(params)
+        }else{
+            return response.status(404)
+        }
     } catch (error) {
         //throw error
         return response.status(500).send(formatDbErrorMessage(error))

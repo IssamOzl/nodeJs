@@ -6,8 +6,8 @@ import { apiKey} from '../dtos/apiKey.dto';
 import { countKeysExists, updateQueryRes } from '../dtos/global.dto';
 import { Request, Response, NextFunction } from 'express';
 import { query,header, matchedData, validationResult } from 'express-validator';
-import dotenv from 'dotenv';
 import { log } from 'console';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const MAX_REQ_NUM:any = process.env.MAX_REQ_NUM 
@@ -16,18 +16,23 @@ const Max_REQ:number =  MAX_REQ_NUM as number
 
 export function validateApiKeyValidation(request:Request,response:Response,next:NextFunction)
 {
-   
+    if(request.originalUrl.includes("/api-docs")){
+        return next()
+    }
     const key:string = request.get('x-api-key') as string
     if(key && key.length>20 ) {
         return next()
     }else{
-        return response.status(401).send("ApiKey must be at least 20 carracters");
+        return response.status(400).send("ApiKey must be at least 20 carracters");
     }
 
 }
 export async function validateApiKey(request:Request,response:Response,next:NextFunction)
 {
-    console.log(request.url)
+    
+    if(request.originalUrl.includes("/api-docs")){
+        return next()
+    }
     // const result = validationResult(request);
     // if (result.isEmpty()) {
     //     console.log("EMpty");

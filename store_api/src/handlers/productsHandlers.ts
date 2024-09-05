@@ -41,7 +41,7 @@ export async function get_prods_by_category(request:Request<{},{},{},get_product
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-            response.status(401).send({"Errors":resValidation.array()} );
+            response.status(400).send({"Errors":resValidation.array()} );
         }
 
        // const{ category_id ,limit,offset} = request.query as unknown as get_products_by_category_request
@@ -67,7 +67,7 @@ export async function get_active_prods_by_category(request:Request<{},{},{},get_
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-            response.status(401).send({"Errors":resValidation.array()} );
+            response.status(400).send({"Errors":resValidation.array()} );
         }
         const category_id:number = request.query.category_id;
         const limit:number = request.query.limit;
@@ -96,7 +96,7 @@ export async function get_all_prods(request:Request<{},{},{},get_all_products_re
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-            response.status(401).send({"Errors":resValidation.array()} );
+            response.status(400).send({"Errors":resValidation.array()} );
         }
 
         const limit:number = request.query.limit;
@@ -115,7 +115,7 @@ export async function get_all_active_prods(request:Request<{},{},{},get_all_prod
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-            response.status(401).send({"Errors":resValidation.array()} );
+            response.status(400).send({"Errors":resValidation.array()} );
         }
 
         const limit:number = request.query.limit;
@@ -139,7 +139,7 @@ export async function get_product_details(request:Request<{},{},get_product_deta
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-           return response.status(401).send({"Errors":resValidation.array()} );
+           return response.status(400).send({"Errors":resValidation.array()} );
         }
 
         const slug:string = request.body.slug
@@ -164,7 +164,7 @@ export async function get_random_products(request:Request<{},{},get_product_deta
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-           return response.status(401).send({"Errors":resValidation.array()} );
+           return response.status(400).send({"Errors":resValidation.array()} );
         }
         const slug:string = request.body.slug
         const prods:product[] = await random_prods(slug,3)
