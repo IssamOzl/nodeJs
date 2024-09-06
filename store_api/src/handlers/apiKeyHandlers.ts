@@ -6,7 +6,6 @@ import { apiKey} from '../dtos/apiKey.dto';
 import { countKeysExists, updateQueryRes } from '../dtos/global.dto';
 import { Request, Response, NextFunction } from 'express';
 import { query,header, matchedData, validationResult } from 'express-validator';
-import { log } from 'console';
 import dotenv from 'dotenv';
 dotenv.config();
 

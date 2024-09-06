@@ -10,7 +10,6 @@ import { shipping_id_count } from '../db/shippingCompanies';
 import {count_id_in_table} from '../db/globalQueries'
 import { check_variation_stock } from '../db/productsQueries';
 import { productVariations } from '../dtos/products.dto';
-import { log } from 'console';
  
 let variation:productVariations
 
@@ -117,8 +116,6 @@ export const place_order_validation = [
         .isInt({min:1}).withMessage("quantity must be an integer >=1")
         .custom(async (value)=>{
             if(value>variation.stock){
-                console.log("value",value)
-                console.log("variation.stock",variation.stock)
                 throw new Error('Quantity ordered is bigger than the stock available')
             }
         })

@@ -30,8 +30,6 @@ export const default_shipping_company = async ()=>{
         return defShippingCompany;
 
     } catch (error) {
-        console.log(error);
-        
         throw error
     }
 }
@@ -43,9 +41,7 @@ export const shipping_id_count = async (shipping_id:number)=>{
         const rows:any = await pool.query(QUERY,[shipping_id])        
         client.release() 
 
-
         const countKeys:countKeysExists = rows[0][0]  as countKeysExists    
-          console.log("from db countKeys",(countKeys));
           
         return countKeys;
 

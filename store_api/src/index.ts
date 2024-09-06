@@ -12,7 +12,6 @@ import {validateApiKey, validateApiKeyValidation} from "./handlers/apiKeyHandler
 import {limiter, placeOrderlimiter} from "./handlers/rateLimiter"
 import { format, transports } from 'winston';
 import {logger, myErrorLogger} from "./handlers/logger"
-import { error } from 'console';
 import options from './swagger';
 
 const swaggerJsDoc = require("swagger-jsdoc")

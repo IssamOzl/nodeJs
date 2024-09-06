@@ -54,7 +54,6 @@ export function decryptKey(encryptedData:string):string{
  // Updating encrypted text
  let decrypted = decipher.update(encryptedText);
  decrypted = Buffer.concat([decrypted, decipher.final()]);
- console.log("decrypted =W",decrypted)
  // returns data after decryption
  return decrypted.toString();
 }

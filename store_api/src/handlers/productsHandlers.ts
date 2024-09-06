@@ -5,7 +5,6 @@ import { get_all_products_request, get_product_details_request, get_products_by_
 import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_prods } from "../db/productsQueries";
 import { off } from "process";
 import { body, check, query, ValidationError, validationResult } from "express-validator";
-import { log, trace } from 'console';
 import { dbErrorReturn, validationErrorArray } from '../dtos/global.dto';
 import { formatDbErrorMessage } from '../utils/helper';
 
@@ -51,7 +50,6 @@ export async function get_prods_by_category(request:Request<{},{},{},get_product
         const offset:number = request.query.offset;
         
         const prods:product[] = await prods_by_category(category_id,limit,offset,true)
-        console.log("prods.length ",prods.length );
         if(prods.length >0){
             return response.status(200).send(prods)
         }else{

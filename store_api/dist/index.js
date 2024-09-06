@@ -11,8 +11,8 @@ const PORT = Number(process.env.SERVER_PORT) || 3000;
 app.use(express_1.default.json());
 connectToDb()
     .then(() => {
-    app.listen(PORT, () => {
-        console.log("Listening on PORT ", PORT);
-    });
-})
+        app.listen(PORT, () => {
+            console.log("Listening on PORT ", PORT);
+        });
+    })
     .catch((error) => { console.log(error); process.exit(0); });

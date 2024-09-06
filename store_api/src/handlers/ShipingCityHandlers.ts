@@ -4,7 +4,6 @@ import { formatDbErrorMessage } from "../utils/helper";
 import { dbErrorReturn, validationErrorArray } from "../dtos/global.dto";
 import { active_shipping_cities,shipping_city_details } from "../db/shippingCityQueries";
 import { query, validationResult } from "express-validator";
-import { log } from "console";
 
 export async function get_active_shipping_cities(request:Request,response:Response<shippingCity[]|dbErrorReturn >) {
     try {
@@ -32,7 +31,6 @@ export async function get_shipping_city_details(request:Request,response:Respons
         }
 
         const id:number = request.query.id as unknown as number
-        console.log("Id",id);
         
         const shippingCity : shippingCity = await shipping_city_details(id)
         if(shippingCity.id){
