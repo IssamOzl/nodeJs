@@ -1,4 +1,5 @@
 import mysql, { Pool, PoolOptions,ConnectionOptions  } from 'mysql2/promise';
+import {logger, myErrorLogger} from "../handlers/logger"
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,9 +17,9 @@ const access: PoolOptions = {
   export const connectToDb = async()=>{
     try {
         await pool.getConnection();
-        console.log("Connect to db succesfully")
+        logger.info("Connect to db succesfully")
     } catch (error) {
-        console.log("Error while connecting to DB",error);
+        logger.info("Error while connecting to DB"+error)
         throw error;
     }
 }

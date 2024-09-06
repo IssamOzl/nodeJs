@@ -1,7 +1,6 @@
 import { Query } from 'mysql2/typings/mysql/lib/protocol/sequences/Query'
 import {pool} from './conn'
 import { order, order_product } from '../dtos/orders.dto'
-import { log } from 'console'
 import { dbError, insertQueryRes, updateQueryRes } from '../dtos/global.dto'
 import { shippingCompany } from '../dtos/shippingCompanies.dto'
 import { default_shipping_company } from './shippingCompanies'
@@ -44,18 +43,15 @@ async function validateOrderBeforeAdd(orderInfos:order) {
 
         // Wait for all price promises to resolve
         const productsWithPrices = await Promise.all(pricePromises);
-        console.log("HELLO 2");
         if(!isFreeShipping)
         {
             //order_shipping_cost: must get it from shipping company if one of the products has shipping cost active
             
             const shipCity:shippingCity = await shipping_city_details(orderInfos.order_shipping_city)
-            console.log("shipCity",shipCity);
             orderInfos.order_shipping_cost = shipCity.shupping_cost
         }
       
         orderInfos.order_total = orderProductsTotal+ orderInfos.order_shipping_cost 
-        console.log("orderProductsTotal", orderInfos.order_total);
 
         // payment_status : will be replaced by cash if not exist
         if(!orderInfos.payment_status){
@@ -141,8 +137,6 @@ export async function add(orderInfos:order) {
        
         client.release(); 
         const insertedId:insertQueryRes = res[0] as insertQueryRes
-        console.log("insertId",insertedId.insertId);
-        
         const isOK:boolean = await add_products_to_order(insertedId.insertId,updatedOrderInfos.products)
         if(isOK){
             return insertedId
@@ -175,7 +169,6 @@ export async function add(orderInfos:order) {
 // }
 async function add_products_to_order(order_id:number, products:order_product[]) {
     try {
-        log("order_id",order_id)
         let isOK:boolean = false
         let QUERY:string = `
             INSERT INTO inventory_order_product
@@ -204,7 +197,6 @@ async function add_products_to_order(order_id:number, products:order_product[]) 
         client.release(); 
         
         const queryRes:insertQueryRes = res[0]    as insertQueryRes
-        log("queryRes",queryRes.affectedRows)
         if(queryRes.affectedRows == products.length)
         {
             isOK = true

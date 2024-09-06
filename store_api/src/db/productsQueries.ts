@@ -3,7 +3,6 @@ import {pool} from './conn'
 import { prodBasePriceShipping, product, productImage, productThumb, productVariations } from '../dtos/products.dto';
 import { productReview } from '../dtos/reviews.dto';
 import { prod_Reviews } from './reviewsQueries';
-import { log } from 'console';
 
 const thumbnail=""
 
@@ -63,8 +62,6 @@ export const latest_ten_prods = async() => {
 }
 
 export const prods_by_category = async(categorie_id:number=-1,limit:number=-1,offset:number=-1,all:boolean=true) => { 
-
-    console.log("limit",limit)
     if(categorie_id != -1){
         try {
             let QUERY:string= "SELECT * FROM product as prd WHERE  category_id = ? ";
@@ -83,15 +80,11 @@ export const prods_by_category = async(categorie_id:number=-1,limit:number=-1,of
             }
             
             QUERY +=" OFFSET "+offset
-            console.log("category_id",categorie_id);
-            console.log("QUERY",QUERY);
             
             const client = await pool.getConnection()
             const [rows, fields]= await client.query(QUERY,[categorie_id])
             client.release();
-            const prods:product[] = rows as product[]
-            console.log(prods);
-            
+            const prods:product[] = rows as product[]            
             return prods
         } catch (error) {
             throw error
@@ -196,7 +189,6 @@ export const check_variation_stock = async(id_variation:number)=>{
         const rows:any = await client.query(QUERY,[id_variation])
         client.release();
         const vars:productVariations = rows[0][0] as productVariations
-        log("vars",vars)
         return vars
     } catch (error) {
         throw error

@@ -60,17 +60,13 @@ app.use(expressWinston.errorLogger({
 winstonInstance:myErrorLogger
 }))
 
-
-
-
 const specs = swaggerJsDoc(options)
 
 connectToDb()
     .then(()=>{
-       // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
          app.use("/api/v1/api-docs",swaggerUi.serve,swaggerUi.setup(specs))
          app.listen(PORT,()=>{
-            console.log("Listening on PORT ",PORT)
+            logger.info("Listening on PORT "+PORT)
         })
     })
-    .catch((error:Error)=>{console.log(error);process.exit(0);})
+    .catch((error:Error)=>{logger.error(error);process.exit(0);})
