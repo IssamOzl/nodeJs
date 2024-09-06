@@ -9,7 +9,12 @@ import { log } from "console";
 export async function get_active_shipping_cities(request:Request,response:Response<shippingCity[]|dbErrorReturn >) {
     try {
         const shippingCities : shippingCity[] = await active_shipping_cities()
-        return response.status(200).send(shippingCities)
+        if(shippingCities.length>0){
+            return response.status(200).send(shippingCities)
+        }else{
+            return response.status(404).send(shippingCities)
+        }
+        
     } catch (error) {
         return response.status(500).send(formatDbErrorMessage(error))
     }
@@ -30,7 +35,13 @@ export async function get_shipping_city_details(request:Request,response:Respons
         console.log("Id",id);
         
         const shippingCity : shippingCity = await shipping_city_details(id)
-        return response.status(200).send(shippingCity)
+        if(shippingCity.id){
+            return response.status(200).send(shippingCity)
+        }else{
+            
+            return response.status(400).send()
+        }
+       
     } catch (error) {
         return response.status(500).send(formatDbErrorMessage(error))
     }

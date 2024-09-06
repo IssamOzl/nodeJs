@@ -12,7 +12,7 @@ export async function getParams(request:Request,response:Response<params|dbError
         if(params){
             return response.status(200).send(params)
         }else{
-            return response.status(404)
+            return response.status(404).send(params)
         }
     } catch (error) {
         //throw error
@@ -31,7 +31,7 @@ export async function getParams(request:Request,response:Response<params|dbError
 //         if(val){
 //             return response.status(200).send(val)
 //         }else{
-//             return response.status(404)
+//             return response.status(404).send()
 //         }
 
 //     } catch (error) {

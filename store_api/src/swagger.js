@@ -631,6 +631,9 @@ const options =
             './src/routes/categoriesRoute.ts',
             './src/routes/orderRoute.ts',
             './src/routes/paramsRoute.ts',
+            './src/routes/productsRoute.ts',
+            './src/routes/shippingCitiesRoute.ts',
+            './src/routes/shippingCompaniesRoute.ts',
         ]
 }
 

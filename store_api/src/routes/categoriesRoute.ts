@@ -38,7 +38,7 @@ route.get("/",getCategories)
  *   /categories/active:
  *     get:
  *       summary: Get all active product categories.
- *       tags: [category]
+ *       tags: [categories]
  *       responses:
  *         "200":
  *           description: The list of active categories.   

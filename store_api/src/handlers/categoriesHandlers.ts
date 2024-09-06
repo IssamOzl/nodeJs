@@ -10,7 +10,7 @@ export async function getCategories(request:Request,response:Response<categories
         if(cats){
             return response.status(200).send(cats)
         }else{
-            return response.status(404)
+            return response.status(404).send(cats)
         }
         
     } catch (error) {
@@ -24,7 +24,7 @@ export async function getActiveCategories(request:Request,response:Response<cate
         if(cats){
             return response.status(200).send(cats)
         }else{
-            return response.status(404)
+            return response.status(404).send(cats)
         }
         
     } catch (error) {

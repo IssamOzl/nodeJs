@@ -81,12 +81,17 @@ export const prods_by_category = async(categorie_id:number=-1,limit:number=-1,of
             if(offset<=-1){
                 offset= 0
             }
+            
             QUERY +=" OFFSET "+offset
+            console.log("category_id",categorie_id);
+            console.log("QUERY",QUERY);
             
             const client = await pool.getConnection()
             const [rows, fields]= await client.query(QUERY,[categorie_id])
             client.release();
             const prods:product[] = rows as product[]
+            console.log(prods);
+            
             return prods
         } catch (error) {
             throw error
@@ -132,6 +137,7 @@ export const all_prods = async(limit:number=-1,offset:number=-1,all:boolean=true
 export const prod_details = async (slug:string)=>{
     try {
         // slug is unique, only one value or 0 is returned
+        
         const QUERY:string = "SELECT * FROM `product` where `product_status` ='active' and slug = ? limit 1"
         const client = await pool.getConnection()
         const [rows,fields] = await client.query(QUERY,[slug])

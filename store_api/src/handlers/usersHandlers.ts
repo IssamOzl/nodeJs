@@ -7,7 +7,7 @@ import { formatDbErrorMessage } from "../utils/helper";
 //    "user_id":number "host":string
 export const generate_api_key_validation = [
     body("user_id")
-        .exists().withMessage("Missing body parameter user_id")
+        .trim().notEmpty().withMessage("Missing body parameter user_id")
         .isInt({min:1}).withMessage("user_id must be an integer >= 1"),
     body("host")
         .optional()
