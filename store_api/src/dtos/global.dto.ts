@@ -22,5 +22,5 @@ export interface dbError{
     "errno":number
 }
 export interface dbErrorReturn{
-    "error":dbError
+    "Errors":dbError
 }

@@ -17,5 +17,5 @@ export const placeOrderlimiter = rateLimit({
 	windowMs: 1 * 60 * 1000, // 15 minutes
 	limit: MAX_REQ_BY_IP_ADD_ORDER, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	legacyHeaders: true, // Disable the `X-RateLimit-*` headers
 })

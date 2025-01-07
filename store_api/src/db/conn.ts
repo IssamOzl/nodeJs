@@ -1,5 +1,5 @@
 import mysql, { Pool, PoolOptions,ConnectionOptions  } from 'mysql2/promise';
-import {logger, myErrorLogger} from "../handlers/logger"
+import {infosLogger,myErrorLogger} from "../handlers/logger"
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,7 +9,8 @@ const access: PoolOptions = {
     database:process.env.DB_NAME ,
     port:Number(process.env.DB_PORT),
     password:process.env.DB_PASSWORD,
-    multipleStatements: true
+    multipleStatements: true,
+    debug:0
   };
 
   export const pool:Pool = mysql.createPool(access);
@@ -17,9 +18,8 @@ const access: PoolOptions = {
   export const connectToDb = async()=>{
     try {
         await pool.getConnection();
-        logger.info("Connect to db succesfully")
+        infosLogger.info("Connect to db succesfully")
     } catch (error) {
-        logger.info("Error while connecting to DB"+error)
         throw error;
     }
 }

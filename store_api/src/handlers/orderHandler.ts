@@ -9,9 +9,10 @@ import { formatDbErrorMessage } from '../utils/helper';
 import { shipping_id_count } from '../db/shippingCompanies';
 import {count_id_in_table} from '../db/globalQueries'
 import { check_variation_stock } from '../db/productsQueries';
-import { productVariations } from '../dtos/products.dto';
+import { productVariations } from '../dtos/products.dto'; 
  
 let variation:productVariations
+let variationsTable : productVariations[] = [] 
 
 // validation chain to validate the object sent
 export const place_order_validation = [
@@ -92,51 +93,73 @@ export const place_order_validation = [
               // Will use the below as the error message
               throw new Error('wrong id_variation passed');
             }else{
+                // get variation
+                console.log("check_variation_stock , var_id : "+value);
                 variation = await check_variation_stock(value)
+                console.log("Variation got : "+JSON.stringify(variation));
+                variationsTable.push(variation)
+                //bodyVariations.push(variation)
                 if(variation.status != 'active'){
-                    throw new Error('id_variation is not active');
+                    throw new Error('Variation is not active');
                 }
             }
             
         }), 
     body("products.*.product_id") // check later if the id exists and has a positive stock 
         .isInt({min:1}).withMessage("product_id must be an integer >=1")
-        .custom(async (value)=>{
+        .custom(async (value,{path})=>{ 
+
+            const parts = path.split(/[\[\]\.]+/); // Regex splits on any '[' or ']' or '.'
+            const index:number = parts[1] as unknown as number;
+            
+            // check if the product ID passed exist's in DB
             const existsProductId:countKeysExists = await count_id_in_table("product","product_id",value);
             if (existsProductId.count_keys <=0) {
                 // Will use the below as the error message
                 throw new Error('wrong product_id passed');
             }
             // check if variation belong's to product
-            if(value != variation.id_produit){
-                throw new Error('variation does not belong to the product');
+            console.log("index",index);
+                console.log("variationsTable[index] ",variationsTable[index]);
+                console.log("product_id ",value);
+             if(value !== variationsTable[index].id_produit){
+                 throw new Error('variation does not belong to the product');
             }
-        }),          
+        
+        }
+    ),          
     body("products.*.quantity") // check later if the id exists and has a positive stock 
         .isInt({min:1}).withMessage("quantity must be an integer >=1")
-        .custom(async (value)=>{
-            if(value>variation.stock){
+        .custom(async (value,{path})=>{
+            
+            const parts = path.split(/[\[\]\.]+/); // Regex splits on any '[' or ']' or '.'
+            const index:number = parts[1] as unknown as number;
+
+            if(value>variationsTable[index].stock){
                 throw new Error('Quantity ordered is bigger than the stock available')
             }
         })
     //price will get it from producst_id    
 ]
 
+
+
 export async function place_order(request:Request<{},{},order>,response:Response<insertQueryRes | validationErrorArray|dbErrorReturn>) {
     try {
+        variationsTable = []
         const resValidation = validationResult(request)
         if(!resValidation.isEmpty()){
-            return response.status(400).send({"Errors":resValidation.array()});
+            return response.status(400).json({"Errors":resValidation.array()});
         }
         const orderInfos:order = request.body
         const insertId:insertQueryRes = await add(orderInfos)
         if(insertId.insertId>0)
         {
-            return response.status(201).send()
+            return response.status(201).json()
         }else{
-            return response.status(500).send(formatDbErrorMessage({"message":"Error occured while handling your request, please try again later."}))
+            return response.status(500).json(formatDbErrorMessage({"Errors":"Error occured while handling your request, please try again later."}))
         }
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }

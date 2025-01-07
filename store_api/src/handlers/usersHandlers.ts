@@ -20,19 +20,19 @@ export async function generate_api_key(request:Request<{},{},userIdParam>,respon
 
         const resValidation = validationResult(request)
         if( !resValidation.isEmpty() ){
-           return response.status(400).send({"Errors":resValidation.array()} );
+           return response.status(400).json({"Errors":resValidation.array()} );
         }
 
         const reqBody:userIdParam = request.body
         const [key,hashedKey]  = await api_key_to_user(reqBody.user_id,reqBody.host)
         // success
         if(key != null && hashedKey != null){
-            return  response.status(200).send([key,hashedKey])
+            return  response.status(200).json([key,hashedKey])
         }else{
-            return  response.status(500).send("Internal server error or user not found")
+            return  response.status(500).json({"Error":"Internal server error or user not found"})
         }
  
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }

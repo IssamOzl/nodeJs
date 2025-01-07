@@ -21,13 +21,13 @@ export const prod_Reviews = async(slug:string)=>{
         const QUERY = "SELECT * FROM `product_reviews` JOIN product on product.product_id = product_reviews.product_id WHERE product.slug = ? and product_reviews.review_status = 1 ORDER by `review_id`"
         const client = await pool.getConnection()
         const [rows,fields] = await pool.execute(QUERY,[slug])
-        client.release()
+       // client.release()
 
         const reviews:productReview[] = rows as productReview[]
-        reviews.forEach( async (review : productReview,index)=>{
-            const images:reviewImages[] =  await review_images(review.review_id) as reviewImages[] 
-            reviews[index].review_images = images
-        })
+        // reviews.forEach( async (review : productReview,index)=>{
+        //     const images:reviewImages[] =  await review_images(review.review_id) as reviewImages[] 
+        //     reviews[index].review_images = images
+        // })
 
         return reviews
 

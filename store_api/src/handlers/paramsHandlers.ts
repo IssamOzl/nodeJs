@@ -10,13 +10,13 @@ export async function getParams(request:Request,response:Response<params|dbError
     try {
         const params:params = await find()
         if(params){
-            return response.status(200).send(params)
+            return response.status(200).json(params)
         }else{
-            return response.status(404).send(params)
+            return response.status(404).json(params)
         }
     } catch (error) {
         //throw error
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 
     

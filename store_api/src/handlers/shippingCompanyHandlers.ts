@@ -8,13 +8,13 @@ export async function get_active_shipping_companies(request:Request,response:Res
     try {
         const shippingCompanies : shippingCompany[] = await active_shipping_companies()
         if(shippingCompanies.length>0){
-            return response.status(200).send(shippingCompanies)
+            return response.status(200).json(shippingCompanies)
         }else{
-            return response.status(404).send(shippingCompanies)
+            return response.status(404).json(shippingCompanies)
         }
         
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }
 
@@ -23,12 +23,12 @@ export async function get_default_shipping_company(request:Request,response:Resp
         
         const defShippingCompany : shippingCompany = await default_shipping_company()
         if(defShippingCompany.shipping_id){
-            return response.status(200).send(defShippingCompany)
+            return response.status(200).json(defShippingCompany)
         }else{
-            return response.status(404).send(defShippingCompany)
+            return response.status(404).json(defShippingCompany)
         }
         
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }

@@ -9,8 +9,10 @@ import { query,header, matchedData, validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 dotenv.config();
 
+
 const MAX_REQ_NUM:any = process.env.MAX_REQ_NUM 
 const Max_REQ:number =  MAX_REQ_NUM as number
+
 
 
 export function validateApiKeyValidation(request:Request,response:Response,next:NextFunction)
@@ -22,7 +24,7 @@ export function validateApiKeyValidation(request:Request,response:Response,next:
     if(key && key.length>20 ) {
         return next()
     }else{
-        return response.status(400).send("ApiKey must be at least 20 carracters");
+        return response.status(400).json({Error:"ApiKey must be at least 20 carracters"});
     }
 
 }
@@ -64,14 +66,14 @@ export async function validateApiKey(request:Request,response:Response,next:Next
             // for test  
             //if('2024-06-30'==lastConnDate){ 
                     if(resQuery.usage_count > Max_REQ){
-                        return response.status(401).send("Daily limit reached") 
+                        return response.status(401).json({Error:"Daily limit reached"}) 
                     }else{
                         //++ usage_count
                         const rowsRes:updateQueryRes = await increment_usage_count(crypted_key,false)
                         if(rowsRes.affectedRows == 1){
                             return  next()
                         }else{
-                            return response.status(500).send("Internal Server Error")
+                            return response.status(500).json({Error:"Internal Server Error"})
                         }
                     }
                 }else{
@@ -80,18 +82,18 @@ export async function validateApiKey(request:Request,response:Response,next:Next
                         if(rowsRes.affectedRows == 1){
                             next()
                         }else{
-                            return  response.status(500).send("Internal Server Error")
+                            return  response.status(500).json({Error:"Internal Server Error"})
                         }
                 }
             }else{
-                response.status(401).send("Not authorized") 
+                response.status(401).json({Error:"Not authorized"})
             }
         }else{
-            response.status(401).send("Missing x-api-key")
+            response.status(401).json({Error:"Missing x-api-key"})
         }
     } catch (error) {
         
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 
   

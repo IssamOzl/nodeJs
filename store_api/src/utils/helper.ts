@@ -60,5 +60,5 @@ export function decryptKey(encryptedData:string):string{
 export function formatDbErrorMessage(error:any){
     const myError:dbError = error as dbError
     myErrorLogger.error(error)
-    return {"error":{"message":myError.message,"code":myError.code,"errno":myError.errno}}
+    return {"Errors":{"message":myError.message,"code":myError.code,"errno":myError.errno}}
 } 

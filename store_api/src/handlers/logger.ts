@@ -16,19 +16,19 @@ let loggerTransport = [
 ]
 let  myErrorLoggerTransport:any = [
     new transports.File({
+        level:"error",
         filename:"logs/"+new Date().toISOString().split('T')[0]+"/inernal_errors.log"
+    })
+]
+let  inofosLoggerTransport:any = [
+    new transports.File({
+        level:"info",
+        filename:"logs/"+new Date().toISOString().split('T')[0]+"/infos.log"
     })
 ]
 
 if(process.env.NODE_ENV !== "prod"){
-    loggerTransport.push(
-        new transports.File({
-            level:"info",
-            filename:"logs/"+new Date().toISOString().split('T')[0]+"/info.log"
-
-        })
-    );
-    myErrorLoggerTransport.push(
+    inofosLoggerTransport.push(
         new transports.Console()
     )
 }
@@ -62,5 +62,16 @@ sqlMessage: ${sqlMessage}  `
             }
             return errorMessage
         })
+    )
+})
+
+
+export const infosLogger = createLogger({
+    transports:inofosLoggerTransport,
+    format : format.combine(
+        format.json(),
+        format.timestamp(),
+        format.prettyPrint(),
+        format.metadata()
     )
 })

@@ -9,13 +9,13 @@ export async function get_active_shipping_cities(request:Request,response:Respon
     try {
         const shippingCities : shippingCity[] = await active_shipping_cities()
         if(shippingCities.length>0){
-            return response.status(200).send(shippingCities)
+            return response.status(200).json(shippingCities)
         }else{
-            return response.status(404).send(shippingCities)
+            return response.status(404).json(shippingCities)
         }
         
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }
 export const get_shipping_city_details_validation = [
@@ -27,20 +27,20 @@ export async function get_shipping_city_details(request:Request,response:Respons
     try {
         const resValidation = validationResult(request)
         if(!resValidation.isEmpty()){
-            return response.status(400).send({"Errors":resValidation.array()});
+            return response.status(400).json({"Errors":resValidation.array()});
         }
 
         const id:number = request.query.id as unknown as number
         
         const shippingCity : shippingCity = await shipping_city_details(id)
         if(shippingCity.id){
-            return response.status(200).send(shippingCity)
+            return response.status(200).json(shippingCity)
         }else{
             
-            return response.status(400).send()
+            return response.status(400).json()
         }
        
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }

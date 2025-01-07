@@ -20,7 +20,7 @@ const options =
         },
         servers: [
           {
-            url: "http://localhost:3000/api/v1/",
+            url: "http://localhost:3001/api/v1/",
             description: 'Development server'
           },
         ],
@@ -633,7 +633,7 @@ const options =
             './src/routes/paramsRoute.ts',
             './src/routes/productsRoute.ts',
             './src/routes/shippingCitiesRoute.ts',
-            './src/routes/shippingCompaniesRoute.ts',
+            './src/routes/shippingCompaniesRoute.ts'
         ]
 }
 
