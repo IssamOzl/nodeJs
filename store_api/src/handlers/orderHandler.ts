@@ -155,7 +155,7 @@ export async function place_order(request:Request<{},{},order>,response:Response
         const insertId:insertQueryRes = await add(orderInfos)
         if(insertId.insertId>0)
         {
-            return response.status(201).json()
+            return response.status(201).json(insertId)
         }else{
             return response.status(500).json(formatDbErrorMessage({"Errors":"Error occured while handling your request, please try again later."}))
         }

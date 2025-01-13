@@ -12,7 +12,7 @@ export async function getParams(request:Request,response:Response<params|dbError
         if(params){
             return response.status(200).json(params)
         }else{
-            return response.status(404).json(params)
+            return response.status(404).send()
         }
     } catch (error) {
         //throw error

@@ -11,7 +11,10 @@ import { formatDbErrorMessage } from '../utils/helper';
 export async function get_latest_ten_prods(request:Request,response:Response<product[]>){
     try {
         const prods:product[] = await latest_ten_prods()
-        return response.status(200).json(prods)
+        if(prods)
+            return response.status(200).json(prods)
+        else
+            return response.status(404).send() 
         
     } catch (error) {
         //throw error
@@ -46,12 +49,11 @@ export async function get_prods_by_category(request:Request<{},{},{},get_product
         const offset:number = request.query.offset;
         
         const prods:product[] = await prods_by_category(category_id,limit,offset,true)
-        // if(prods.length >0){
-        //     return response.status(200).send(prods)
-        // }else{
-        //     return response.status(404).send(prods)
-        // }
-        return response.status(200).json(prods)
+        if(prods.length >0){
+            return response.status(200).send(prods)
+        }else{
+            return response.status(404).send()
+        } 
     } catch (error) {
         //throw error
         return response.status(500).json(formatDbErrorMessage(error))
@@ -71,12 +73,11 @@ export async function get_active_prods_by_category(request:Request<{},{},{},get_
 
         const prods:product[] = await prods_by_category(category_id,limit,offset,false)
         
-        // if(prods.length >0){
-        //     return response.status(200).send(prods)
-        // }else{
-        //     return response.status(404).send(prods)
-        // }
-        return response.status(200).json(prods)
+        if(prods.length >0){
+            return response.status(200).json(prods)
+        }else{
+            return response.status(404).send()
+        }
         
     } catch (error) {
         //throw error
@@ -105,16 +106,15 @@ export async function get_all_prods(request:Request<{},{},{},get_all_products_re
         const offset:number = request.query.offset;
 
         const prods:product[] = await all_prods(limit,offset,true)
-        // if(prods){
-        //     return response.status(200).send(prods)
-        // }else{
-        //     return response.status(404).send(prods)
-        // }
-        return response.status(200).send(prods)
+        if(prods){
+            return response.status(200).json(prods)
+        }else{
+            return response.status(404).send()
+        }
         
     } catch (error) {
         //throw error
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 } 
 export async function get_all_active_prods(request:Request<{},{},{},get_all_products_request>,response:Response<product[]|validationErrorArray|dbErrorReturn>){
@@ -122,24 +122,21 @@ export async function get_all_active_prods(request:Request<{},{},{},get_all_prod
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-            response.status(400).send({"Errors":resValidation.array()} );
+            response.status(400).json({"Errors":resValidation.array()} );
         }
 
         const limit:number = request.query.limit;
         const offset:number = request.query.offset;
 
         const prods:product[] = await all_prods(limit,offset,false)
-        // if(prods){
-        //     return response.status(200).send(prods)
-        // }else{
-        //     return response.status(404).send(prods)
-        // }
-        return response.status(200).send(prods)
-        
-        
+        if(prods){
+            return response.status(200).json(prods)
+        }else{
+            return response.status(404).send()
+        } 
     } catch (error) {
         //throw error
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 } 
 export const get_product_details_validation = [
@@ -153,7 +150,7 @@ export async function get_product_details(request:Request<{},{},{},get_product_d
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-           return response.status(400).send({"Errors":resValidation.array()} );
+           return response.status(400).json({"Errors":resValidation.array()} );
         }
 
         const slug:string = request.query.slug
@@ -164,13 +161,13 @@ export async function get_product_details(request:Request<{},{},{},get_product_d
         const prodRet :product = prods[0]
         if(prods.length =0)
         {
-            return response.status(404).send(prodRet)
+            return response.status(404).send()
         }else{
-            return response.status(200).send(prodRet)
+            return response.status(200).json(prodRet)
         }
 
     } catch (error) {
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }
 
@@ -179,21 +176,20 @@ export async function get_random_products(request:Request<{},{},{},get_product_d
         const resValidation = validationResult(request);
         
         if (!resValidation.isEmpty()) {
-           return response.status(400).send({"Errors":resValidation.array()} );
+           return response.status(400).json({"Errors":resValidation.array()} );
         }
         const slug:string = request.query.slug
         const prods:product[] = await random_prods(slug,3)
 
-        // if(prods.length >0)
-        // {
-        //     return response.status(200).send(prods)
-        // }else{
-        //     return response.status(404).send(prods)
-        // }
-        return response.status(200).send(prods)
+        if(prods.length >0)
+        {
+            return response.status(200).json(prods)
+        }else{
+            return response.status(404).send()
+        } 
 
     } catch (error) {
        
-        return response.status(500).send(formatDbErrorMessage(error))
+        return response.status(500).json(formatDbErrorMessage(error))
     }
 }

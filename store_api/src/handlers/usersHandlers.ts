@@ -29,7 +29,7 @@ export async function generate_api_key(request:Request<{},{},userIdParam>,respon
         if(key != null && hashedKey != null){
             return  response.status(200).json([key,hashedKey])
         }else{
-            return  response.status(500).json({"Error":"Internal server error or user not found"})
+            return  response.status(500).json({"Errors":"Internal server error or user not found"})
         }
  
     } catch (error) {

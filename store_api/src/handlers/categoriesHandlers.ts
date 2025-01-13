@@ -11,7 +11,7 @@ export async function getCategories(request: Request, response: Response<categor
         if (cats) {
             return response.status(200).json(cats)
         } else {
-            return response.status(404).json(cats)
+            return response.status(404).send()
         }
 
     } catch (error) {
@@ -25,7 +25,7 @@ export async function getActiveCategories(request: Request, response: Response<c
         if (cats) {
             return response.status(200).json(cats)
         } else {
-            return response.status(404).json(cats)
+            return response.status(404).send()
         }
 
     } catch (error) {
@@ -46,7 +46,10 @@ export async function getCategoryDetails(request: Request, response: Response<ca
     try {
         const id = request.query.id as unknown as number
         const category: categories = await findById(id)
-        return response.status(200).json(category) 
+        if(category)   
+            return response.status(200).json(category) 
+        else
+            return response.status(404).send() 
     } catch (error) {
         return response.status(500).json(formatDbErrorMessage(error))
 

@@ -10,7 +10,7 @@ export async function get_active_shipping_companies(request:Request,response:Res
         if(shippingCompanies.length>0){
             return response.status(200).json(shippingCompanies)
         }else{
-            return response.status(404).json(shippingCompanies)
+            return response.status(404).send()
         }
         
     } catch (error) {
@@ -25,7 +25,7 @@ export async function get_default_shipping_company(request:Request,response:Resp
         if(defShippingCompany.shipping_id){
             return response.status(200).json(defShippingCompany)
         }else{
-            return response.status(404).json(defShippingCompany)
+            return response.status(404).send()
         }
         
     } catch (error) {

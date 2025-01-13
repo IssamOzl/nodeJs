@@ -11,7 +11,7 @@ export async function get_active_shipping_cities(request:Request,response:Respon
         if(shippingCities.length>0){
             return response.status(200).json(shippingCities)
         }else{
-            return response.status(404).json(shippingCities)
+            return response.status(404).send()
         }
         
     } catch (error) {
@@ -37,7 +37,7 @@ export async function get_shipping_city_details(request:Request,response:Respons
             return response.status(200).json(shippingCity)
         }else{
             
-            return response.status(400).json()
+            return response.status(404).send()
         }
        
     } catch (error) {
