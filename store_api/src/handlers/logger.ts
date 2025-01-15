@@ -1,4 +1,4 @@
-import { format, transports,createLogger } from 'winston';
+import { format, transports, createLogger } from 'winston';
 import dotenv from 'dotenv';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 dotenv.config();
@@ -6,54 +6,54 @@ dotenv.config();
 // logger transport
 let loggerTransport = [
     new transports.File({
-        level:"warn",
-        filename:"logs/"+new Date().toISOString().split('T')[0]+"/warn.log"
+        level: "warn",
+        filename: "logs/" + new Date().toISOString().split('T')[0] + "/warn.log"
     }),
     new transports.File({
-        level:"error",
-        filename:"logs/"+new Date().toISOString().split('T')[0]+"/error.log"
+        level: "error",
+        filename: "logs/" + new Date().toISOString().split('T')[0] + "/error.log"
     }),
 ]
-let  myErrorLoggerTransport:any = [
+let myErrorLoggerTransport: any = [
     new transports.File({
-        level:"error",
-        filename:"logs/"+new Date().toISOString().split('T')[0]+"/inernal_errors.log"
+        level: "error",
+        filename: "logs/" + new Date().toISOString().split('T')[0] + "/inernal_errors.log"
     })
 ]
-let  inofosLoggerTransport:any = [
+let inofosLoggerTransport: any = [
     new transports.File({
-        level:"info",
-        filename:"logs/"+new Date().toISOString().split('T')[0]+"/infos.log"
+        level: "info",
+        filename: "logs/" + new Date().toISOString().split('T')[0] + "/infos.log"
     })
 ]
 
-if(process.env.NODE_ENV !== "prod"){
+if (process.env.NODE_ENV !== "prod") {
     inofosLoggerTransport.push(
         new transports.Console()
     )
 }
 export const logger = createLogger({
-    transports:loggerTransport,
-    format : format.combine(
+    transports: loggerTransport,
+    format: format.combine(
         format.json(),
         format.timestamp(),
         format.prettyPrint(),
         format.metadata()
     )
 })
-export const myErrorLogger =  createLogger({
-    transports:myErrorLoggerTransport,
-    format:format.combine(
+export const myErrorLogger = createLogger({
+    transports: myErrorLoggerTransport,
+    format: format.combine(
         format.timestamp(),
         format.json(),
         format.prettyPrint(),
-        format.printf(({level,meta,timestamp,message,code,sql,sqlMessage})=>{
-            let errorMessage:string = `${timestamp} ${level} :`
-            if(meta){
-                errorMessage+=" "+meta.message
+        format.printf(({ level, meta, timestamp, message, code, sql, sqlMessage }) => {
+            let errorMessage: string = `${timestamp} ${level} :`
+            if (meta) {
+                errorMessage += " " + meta.message
             }
-            if(sql){
-                errorMessage+=`
+            if (sql) {
+                errorMessage += `
 DB ERROR :
 sql: ${message}
 level: ${level}
@@ -67,8 +67,8 @@ sqlMessage: ${sqlMessage}  `
 
 
 export const infosLogger = createLogger({
-    transports:inofosLoggerTransport,
-    format : format.combine(
+    transports: inofosLoggerTransport,
+    format: format.combine(
         format.json(),
         format.timestamp(),
         format.prettyPrint(),

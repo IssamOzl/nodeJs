@@ -94,9 +94,9 @@ export const place_order_validation = [
               throw new Error('wrong id_variation passed');
             }else{
                 // get variation
-                console.log("check_variation_stock , var_id : "+value);
+                //console.log("check_variation_stock , var_id : "+value);
                 variation = await check_variation_stock(value)
-                console.log("Variation got : "+JSON.stringify(variation));
+                //console.log("Variation got : "+JSON.stringify(variation));
                 variationsTable.push(variation)
                 //bodyVariations.push(variation)
                 if(variation.status != 'active'){
@@ -119,9 +119,9 @@ export const place_order_validation = [
                 throw new Error('wrong product_id passed');
             }
             // check if variation belong's to product
-            console.log("index",index);
-                console.log("variationsTable[index] ",variationsTable[index]);
-                console.log("product_id ",value);
+            // console.log("index",index);
+            //     console.log("variationsTable[index] ",variationsTable[index]);
+            //     console.log("product_id ",value);
              if(value !== variationsTable[index].id_produit){
                  throw new Error('variation does not belong to the product');
             }
