@@ -8,15 +8,12 @@ const thumbnail = ""
 
 const product_thumb_name = async (slug: string) => {
     try {
-        console.log("product_thumb_name called" );
         let QUERY = "SELECT `name_image`  FROM `product_images` WHERE `id_product` = (SELECT product_id FROM product WHERE slug = ? LIMIT 1) and `name_image` LIKE '%mini%' LIMIT 1"
         const client = await pool.getConnection()
-        console.log(QUERY);
         const [rows, fields] = await client.query(QUERY, [slug])
         pool.releaseConnection(client)
         client.release();
         const thumb: productThumb[] = rows as productThumb[]
-        console.log("product_thumb_name resolve",thumb[0]);
         return thumb[0]
 
     } catch (error) {
@@ -33,7 +30,6 @@ const product_images = async (slug: string) => {
         client.release()
         const images: productImage[] = rows as productImage[]
         
-        console.log("product_images resolve",images);
         return images
     } catch (error) {
         throw error
@@ -42,19 +38,11 @@ const product_images = async (slug: string) => {
 
 const stock_product = async (slug: string) => {
     try {
-        console.log("stock_product called");
-        //const QUERY = "SELECT id,name,status,stock,placement FROM `product_variations` WHERE `status`='active' AND `id_produit` in (select `product_id` from product where slug = 	?)"
         const QUERY = "SELECT id,name,status,stock,placement FROM `product_variations` inner join product on product.product_id = product_variations.id_produit WHERE `status`='active' AND product.slug =  '"+slug+"';"
-        
-        console.log(QUERY);
-        console.log(slug);
-         const client = await pool.getConnection()
-        //console.log("getConnection");
+        const client = await pool.getConnection()
         const [rows, fields] = await client.query(QUERY )
-        console.log("await pool.query");
         const variations: productVariations[] = rows as productVariations[]
 
-        console.log("stock_product resolve",variations);
         pool.releaseConnection(client)
         client.release()
         return variations
@@ -165,11 +153,6 @@ export const prod_details = async (slug: string) => {
             let variations: productVariations[]
             let thumb_name: productThumb
 
-            
-
-
-            console.log("await Promise");
-
             prodPromises.push(variations = await stock_product(slug))
             prodPromises.push(thumb_name = await product_thumb_name(slug))
             prodPromises.push(images = await product_images(slug))
@@ -180,8 +163,6 @@ export const prod_details = async (slug: string) => {
               } catch (error) {
                 console.error(error);
               }
-
-            console.log("got Promise");
             
             prods[0].thumbnail = thumb_name.name_image
             prods[0].images = images
@@ -228,8 +209,8 @@ export const random_prods = async (slug: string, count: number) => {
 export const check_variation_stock = async (id_variation: number) => {
     try {
         let QUERY = "select  id,name,status,stock,placement,id_produit from product_variations where id=? "
-        console.log("QUERY",QUERY);
-        console.log("id_variation",id_variation);
+        // console.log("QUERY",QUERY);
+        // console.log("id_variation",id_variation);
         const client = await pool.getConnection()
         const rows: any = await client.query(QUERY, [id_variation])
         pool.releaseConnection(client)

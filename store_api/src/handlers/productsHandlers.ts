@@ -1,9 +1,6 @@
 import { NextFunction,Request,Response } from 'express';
-import { find } from "../db/paramsQueries";
-import { Send } from "express-serve-static-core";
 import { get_all_products_request, get_product_details_request, get_products_by_category_request, product } from "../dtos/products.dto";
 import { all_prods, latest_ten_prods, prod_details, prods_by_category, random_prods } from "../db/productsQueries";
-import { off } from "process";
 import { body, check, query, ValidationError, validationResult } from "express-validator";
 import { dbErrorReturn, validationErrorArray } from '../dtos/global.dto';
 import { formatDbErrorMessage } from '../utils/helper';
